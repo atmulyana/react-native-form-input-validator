@@ -1,0 +1,41 @@
+{
+  "name": "react-native-form-input-validator",
+  "version": "0.1.0",
+  "description": "Doing validation to form inputs in RN app",
+  "author": "AT Mulyana <atmulyana@yahoo.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14"
+  },
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "jest",
+    "flow": "flow"
+  },
+  "files": [
+    "index.js",
+    "rules.js",
+    "lib"
+  ],
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-is": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.18.13",
+    "babel-jest": "^28.1.3",
+    "flow-bin": "^0.186.0",
+    "jest": "^28.1.3",
+    "metro-react-native-babel-preset": "^0.72.1",
+    "react-test-renderer": ">=16.8.0"
+  },
+  "jest": {
+    "preset": "react-native",
+    "testMatch": [
+      "**/__tests__/**/*.[jt]s?(x)",
+      "**/?(*.)+(spec|test).[jt]s?(x)",
+      "!**/example/**"
+    ]
+  }
+}

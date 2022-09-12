@@ -1,0 +1,13 @@
+[ignore]
+<PROJECT_ROOT>/example/.*
+<PROJECT_ROOT>/node_modules/resolve/test/.*
+
+[include]
+
+[libs]
+
+[lints]
+
+[options]
+
+[strict]
