@@ -54,3 +54,4 @@ yarn-error.log
 *.jsbundle
 
 example
+__tests__/__snapshots__

@@ -1,6 +1,6 @@
 {
   "name": "react-native-form-input-validator",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Doing validation to form inputs in RN app",
   "author": "AT Mulyana <atmulyana@yahoo.com>",
   "license": "MIT",
