@@ -86,13 +86,13 @@ const styles = StyleSheet.create({
 You have seen the example above. You may concern to `withValidation` and `ValidationContext` most. At a glance, you may have concluded
 that `withValidation` is to specify the validation rules for the input and `ValidationContext` is to validate all inputs inside it.
 Actually, each input can be validated individually and doesn't need to be put inside `ValidationContext` (see detailly
-[here](#withValidation-method_validate)). `ValidationContext` exists to validate many input at once.
+[here](#withValidation_method-validate)). `ValidationContext` exists to validate many input at once.
 
 
 ## **`ValidationContext`** <a name="ValidationContext"></a>
 
 This element can validate all contained inputs in it that have been set by [`withValidation`](#withValidation). Also, it can clear the validation
-status of those inputs. You may treat this element is like `form` tag in HTML document. Some properties that can be set for this element are:
+status of those inputs. You may treat this element like `form` tag in HTML document. Some properties that can be set for this element are:
 <a name="ValidationContext-properties"></a>
 <table>
 <tr>
@@ -111,7 +111,7 @@ status of those inputs. You may treat this element is like `form` tag in HTML do
     <td valign="top"><code>errorTextStyle</code><a name="ValidationContext-errorTextStyle"></a></td>
     <td valign="top"><code>Text</code> style property</td>
     <td valign="top">The style for the error message when the input is invalid.</td>
-    <td valign="top">gives the red color to the text</td>
+    <td valign="top">gives red color to the text</td>
 </tr>
 <tr>
     <td valign="top"><code>focusOnInvalid</code><a name="ValidationContext-focusOnInvalid"></a></td>
@@ -124,7 +124,7 @@ status of those inputs. You may treat this element is like `form` tag in HTML do
     <td valign="top"><code>inputErrorStyle</code><a name="ValidationContext-inputErrorStyle"></a></td>
     <td valign="top">input style property</td>
     <td valign="top">The style for the input when the input is invalid.</td>
-    <td valign="top">gives the red color to the border and text</td>
+    <td valign="top">gives red color to the border and text</td>
 </tr>
 <tr>
     <td valign="top"><code>lang</code><a name="ValidationContext-lang"></a></td>
@@ -138,7 +138,7 @@ status of those inputs. You may treat this element is like `form` tag in HTML do
 </table>
 
 #### **Methods of `ValidationContext` reference (the object that is set by `ref` property):**
-- `clearValidation` <a name="withValidation_method-clearValidation"></a>   
+- `clearValidation` <a name="ValidationContext_method-clearValidation"></a>   
   It executes [`clearValidation`](#withValidation_method-clearValidation) method of all contained inputs to clear the validation
   status of all contained inputs.
 
@@ -147,7 +147,7 @@ status of those inputs. You may treat this element is like `form` tag in HTML do
   all contained inputs so that their error messages are refreshed. Because of that, if the input is already valid then the error
   message will be gone.
 
-- `validate` <a name="withValidation_method-validate"></a>   
+- `validate` <a name="ValidationContext_method-validate"></a>   
   It executes [`validate`](#withValidation_method-validate) method of all contained inputs to validate all contained inputs. This method
   returns `false` if any invalid input and returns `true` otherwise.
 
@@ -235,7 +235,7 @@ function PercentageInput({
         <a href="#ValidationContext-inputErrorStyle"><code>inputErrorStyle</code></a> of <code>ValidationContext</code>. You must also
         specify <a href="#withValidation-setStatusStyle">setStatusStyle</a> to make the input changes its style.
     </td>
-    <td valign="top">gives the red color to the border and text</td>
+    <td valign="top">None (optional)</td>
 </tr>
 <tr>
     <td valign="top"><code>lang</code><a name="withValidation-lang"></a></td>
@@ -269,8 +269,8 @@ function PercentageInput({
         function. In which condition the function is executed, you can check the second parameter.<br/>
         <b>Parameters:</b>
         <ul>
-            <li><code>props</code> is the properties of input. The property you should care about is which hold style value for
-                the input, usullly named <code>style</code>.</li>
+            <li><code>props</code> is the properties of input. The property you should care about is that which holds holds style value
+                for the input, usullly named <code>style</code>.</li>
             <li><code>style</code> is the style value that should be assigned to the input style property. When invalid, this parameter
                 is array of two entries, the first is <a href="#ValidationContext-inputErrorStyle"><code>inputErrorStyle</code></a> of
                 <code>ValidationContext</code> and the second is <a href="#withValidation-inputErrorStyle"><code>inputErrorStyle</code></a>
@@ -311,7 +311,7 @@ function PercentageInput({
     <td valign="top">This function is opposite of <a href="#withValidation-getStyle"><code>getStyle</code></a>. The third parameter is
         the style for <code>View</code> container (read this <a href="#style_handling">section</a> for more information). This third
         parameter is useful in the case that you want to modify it. Because <code>setStyle</code> is invoked in every render, just
-        make sure it won't mess up the layout when executed more than once. 
+        make sure it won't mess up the layout/appearance when executed more than once. 
     </td>
     <td valign="top"><nobr><code>(props, style) =></code></nobr><br/> <nobr><code>props.style = style</code></nobr></td>
 </tr>
@@ -328,11 +328,24 @@ function PercentageInput({
   It shows the validation status of input. It's `true` if valid and `false` if invalid. The value of this property is trusted after
   calling [`validate`](#withValidation_method-validate).
 
-- `validate` <a name="withValidation_method-validate"></a>
+- `validate` <a name="withValidation_method-validate"></a>  
   This method is to validate the input based on the specified [rules](#withValidation-rules). Below is the example how to validate input
   when it's lost focus.   
 
     `<NameTextInput ref={nameInput} onBlur={() => nameInput.current?.validate()} onChangeText={setName} value={name} />`
+
+If the original input has the same methods and property as listed above, they will be overriden. If you want to invoke the overridden
+method/property of original input, follow the example below:
+
+    const inputRef = React.useRef();
+    ...
+    <Input ref={inputRef} onBlur={() => {
+        //This statement will validate the input
+        inputRef.current.validate();
+        
+        //This statement will invoke `validate` method of original input
+        Object.getPrototypeOf(inputRef.current).validate();
+    }} ... />
 
 
 
@@ -341,7 +354,7 @@ function PercentageInput({
 To make the input and the error message stick together, [`withValidation`](#withValidation) wraps them into a `View` container. However,
 we want the component yielded by [`withValidation`](#withValidation) behaves the same as the original input except we add the validation
 feature to it. All properties for the input must apply for the new component. Every property seems ok, we can just distribute them to the
-wrapped input. Except one property we think it has a problem. That is the property which define the style for the input. Because now, the
+wrapped input. Except one property we think it has a problem. That is the property which defines the style for the input. Because now, the
 input is inside a `View` container. We must modify the style property if we still want the same style as if the input is unwrapped. The
 big concern is all style attributes dealing with layout. That is how the parent of input arranges the area for input, before. Because now,
 the parent must arrange the `View` container. Therefore, the component yielded by [`withValidation`](#withValidation) will move all style
@@ -349,8 +362,8 @@ attributes dealing with layout to be the style attributes of `View` container. T
 container.
 
 We know, the value for style property is not always plain object or a falsy value but it can be a recursive array. Therefore, the first
-step is it must flatten it if it's an array. Fortunately, react native has provided `StyleSheet.flatten` function to do that. After it
-gets a single plain object, the following style attributes will be assigned to `View` container:
+step is to flatten it if it's an array. Fortunately, react native has provided `StyleSheet.flatten` function to do that. After getting
+a single plain object, the following style attributes will be assigned to `View` container:
 - `alignSelf`
 - `bottom`
 - `display`
@@ -379,7 +392,7 @@ gets a single plain object, the following style attributes will be assigned to `
 - `zIndex`
 
 Some other attributes will be moved to `View` containner under a condition:
-- `height`, `minHeight` and `maxHeight`, if the percentage value
+- `height`, `minHeight` and `maxHeight`, if having the percentage value
 - `flex`, if greater than 0.
 
 To make sure the input fill the area of `View` container, its `flex` attribute is set to 1 if the `View` container has one of 
@@ -407,7 +420,7 @@ This function does more detailedly than a shallow compare. Let's explain in the 
     isDifferentStyle(style1, [style2]); //return true
     isDifferentStyle([style1], [style1, style2]); //return true
 
-So, the function simply just compare the entry in the array at the same index. The more detailedly logic can be done to make sure
+So, the function simply just compares the entry in the array at the same index. The more detailedly logic can be done to make sure
 that they are really different but it can cause a more complicated process that won't help increasing performance.
 
 To help increasing performance, you must also set the style value to a contant value, not variable. For example:
@@ -498,7 +511,7 @@ function setStatusStyleDefault(props, style) {
         }
     }
     else //back to normal style 
-        if (Array.isArray(inputStyle)) {v
+        if (Array.isArray(inputStyle)) {
             setStyleDefault(props, inputStyle[0]);
         }
 }
@@ -537,7 +550,7 @@ This is the base class for all rule objects. Therefore, all object rules must ha
   rule object. For example: `"${name} is invalid. ${value} is not valid phone number"`.
 
 - `isValid` <a name="ValidationRule_property-isValid"></a>  
-  It's `true` if valid and `false` if invalid. It's set by [`validate`](#ValidationRule_method-validate) method. THerefore, it's trusted
+  It's `true` if valid and `false` if invalid. It's set by [`validate`](#ValidationRule_method-validate) method. Therefore, it's trusted
   just after calling [`validate`](#ValidationRule_method-validate) method.
 
 - `lang`  
@@ -555,13 +568,13 @@ This is the base class for all rule objects. Therefore, all object rules must ha
   `widthValidation` [`name`](#withValidation-name) option.
 
 - `priority` <a name="ValidationRule_property-priority"></a>  
-  Read-only. If we specify some rules to validate the input, `priority` determines which rule to be examined first. `priority` has number
-  value. The lower value means the higher priority. By existence of `priority`, you don't need to bother the order in
+  Read-only. If we specify some rules to validate the input, `priority` determines which rule to be examined first. `priority` has a
+  number value. The lower value means the higher priority. By existence of `priority`, you don't need to bother the order in
   [`rules`](#withValidation-rules) array of `withValidation` option. The value of this property is set by
   [`setPriority`](#ValidationRule_method-setPriority).
 
-  The *built-in* rules have the priority as following (ordered based on which is examined first):
-  + `required`, `required.if`
+  By default, the *built-in* rules have the priority as following (ordered based on which is examined first):
+  + `required`, `required.if` (the priority cannot be changed, always the highest)
   + `email`, `numeric`, `strlen`, `strlenmax`
   + `integer`
   + `max`, `min`
@@ -596,7 +609,7 @@ This is the base class for all rule objects. Therefore, all object rules must ha
   validity of [`value`](#ValidationRule_property-value).
 
 You may ask why there are some `set*` method, why don't leave *read-write* property alone. It is to make *fluent interface* which
-is more convenient. For example, when you set rule for `withValidation` rule option:
+is more convenient. For example, when you set rule for `withValidation` [`rules`](#withValidation-rules) option:
 
     const Input = withValidation(..., {
         ...
@@ -660,7 +673,7 @@ for the input. The `numeric` rule must have higher [`priority`](#ValidationRule_
 To assess if the input value is numeric or not.
 
 ### **`new Regex(pattern, flags)` or `regex(pattern, flags)`** <a name="regex"></a>
-To examine if `pattern` applies to the input value. `pattern` can be a `RegExp` object or a a pattern string. If `pattern` is a
+To examine if `pattern` applies to the input value. `pattern` can be a `RegExp` object or a pattern string. If `pattern` is a
 string, `flags` parameter is the flags to add to the pattern (see
 [this doc](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/RegExp) for more information). 
 
@@ -674,7 +687,7 @@ It's the same as [`required`](#required) rule but under a condition. The `predic
 then the input is required. Otherwise, it's optional. The parameter of `predicate` function is the input value.
 
 ### **`new CustomRule(predicate, errorMessage)` or `rule(predicate, errorMessage)`** <a name="rule"></a>
-If you need more complicated logic to assess that the input value is valid or invalid, this rule fits for it. The `predicate`
+If you need more complicated logic to assess whether the input value is valid or invalid, this rule fits for it. The `predicate`
 parameter is a function to asses the input value. The parameter of this function is the input value. The `predicate` function
 may return `boolean` (`true` is valid, `false` is invalid) or a string. If it returns a string then the input is considered as
 invalid. The returned string is the error message (by this way, you may create different error message for different condition).
@@ -718,17 +731,17 @@ be 'must be filled'. To do that, insert some codes into `index.js` in the root d
 
     AppRegistry.registerComponent(appName, () => App);
 </pre>
-The lines which have yellow background are the inserted code.
+The lines which have bold font are the inserted code.
 
 If you read the message for `max` or `min` rule, you find the special words `${max}` and `${min}`. They are the variable placeholder
 that will be replaced by the real value. The error message will be processed by [`str`](#function-str) function. The second parameter
 for the function is the examined rule object. Therefore, the variable name in the template string is the property name of the rule
-object. For example, in the example before, you want to display the input name in the message. You must change the second yellow line
+object. For example, in the example before, you want to display the input name in the message. You must change the second bold line
 to be
 
     messages.required = '${name} must be filled';
 
-To make it works, you must also to set the input name in `withValidation` [name](#ValidationRule_property-name) option.
+To make it works, you must also to set the input name in `withValidation` [name](#withValidation-name) option.
 
 
 ## **Example App** <a name="messages"></a>
