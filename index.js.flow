@@ -1,0 +1,36 @@
+/**
+ * https://github.com/atmulyana/react-native-form-input-validator
+ * @format
+ * @flow strict-local
+ */
+import * as React from 'react'
+import type {
+    ContextProps,
+    ContextRef,
+    RefProp,
+    Rule,
+    StyleProp,
+    ValidationOption,
+    ValidationProps,
+    InputRef,
+} from './lib/types';
+
+export var ValidationContext: React.AbstractComponent<ContextProps, ContextRef>;
+
+declare export class Validation extends React.Component<ValidationProps> implements InputRef {
+    constructor(props: ValidationProps): void;
+    index: number;
+    get isValid(): boolean;
+    validate(): boolean;
+    clearValidation(): void;
+}
+
+declare export function isDifferentStyle(style1: StyleProp, style2: StyleProp): boolean;
+declare export function setStatusStyleDefault(props: {...}, style: StyleProp): React.Node;
+declare export function withValidation<Props: {...}, Instance>(
+    Input: React.AbstractComponent<Props, Instance>,
+    option: ValidationOption<Props> | Array<Rule<mixed>> | Rule<mixed>
+): React.AbstractComponent<Props, Instance & InputRef>;
+
+declare export function str(template: ?string, params: interface { +[key: string]: mixed }): ?string;
+declare export function setRef<T>(refHandler: RefProp<T>, refObj: T | null): void;

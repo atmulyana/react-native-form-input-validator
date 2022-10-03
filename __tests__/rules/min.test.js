@@ -6,7 +6,11 @@
 import {min} from '../../lib/rules/min';
 
 test('validation: min on number', () => {
-    const val = min(5);
+    let val = min(5);
+    expect(val.setValue(4).validate().isValid).toBe(false);
+    expect(val.setValue(5).validate().isValid).toBe(true);
+    expect(val.setValue(6).validate().isValid).toBe(true);
+    val = min(() => 5);
     expect(val.setValue(4).validate().isValid).toBe(false);
     expect(val.setValue(5).validate().isValid).toBe(true);
     expect(val.setValue(6).validate().isValid).toBe(true);

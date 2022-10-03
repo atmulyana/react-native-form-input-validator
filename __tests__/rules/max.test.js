@@ -6,7 +6,11 @@
 import {max} from '../../lib/rules/max';
 
 test('validation: max on number', () => {
-    const val = max(5);
+    let val = max(5);
+    expect(val.setValue(4).validate().isValid).toBe(true);
+    expect(val.setValue(5).validate().isValid).toBe(true);
+    expect(val.setValue(6).validate().isValid).toBe(false);
+    val = max(() => 5);
     expect(val.setValue(4).validate().isValid).toBe(true);
     expect(val.setValue(5).validate().isValid).toBe(true);
     expect(val.setValue(6).validate().isValid).toBe(false);

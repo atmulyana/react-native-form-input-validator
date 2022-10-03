@@ -5,12 +5,12 @@
  */
 import Renderer from 'react-test-renderer';
 import {StyleSheet, Text, TextInput, View} from "react-native";
-import {setErrorStyleDefault, withValidation} from "../lib/Validation";
+import {setStatusStyleDefault, withValidation} from "../lib/Validation";
 import {required} from '../lib/rules';
 
 const Input = withValidation(TextInput, {
     rules: [required],
-    setErrorStyle: setErrorStyleDefault,
+    setStatusStyle: setStatusStyleDefault,
 });
 
 let inputRef;

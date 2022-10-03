@@ -3,7 +3,6 @@
  *
  * @format
  */
-import {optional} from '../../lib/rules/optional';
 import {required} from '../../lib/rules/required';
 import {numeric} from '../../lib/rules/numeric';
 import {min} from '../../lib/rules/min';
@@ -11,7 +10,7 @@ import {validate} from '../../lib/helpers';
 
 
 test('validation: validate with optional rule', () => {
-    const rules = [min(5), numeric, optional];
+    const rules = [min(5), numeric];
     expect(validate('', rules)).toBe(true);
     expect(validate('6abc', rules)).toContain('numeric');
     expect(validate('6', rules)).toBe(true);

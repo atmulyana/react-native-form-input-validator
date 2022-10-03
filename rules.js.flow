@@ -1,0 +1,75 @@
+/**
+ * https://github.com/atmulyana/react-native-form-input-validator
+ * @format
+ * @flow
+ */
+import type {
+    ComparableType,
+    MessageFunction,
+    StrLengthType,
+    ValidateFunction,
+} from './lib/types';
+import {Rule} from './lib/types';
+
+declare export default class ValidationRule<T> extends Rule<T> {
+    constructor(): void;
+    get priority(): number;
+    get errorMessage(): ?string;
+    get messageFunc(): MessageFunction<T>;
+    get value(): T;
+    get resultValue(): mixed;
+
+    setMessageFunc(func: MessageFunction<T>): Rule<T>;
+    setName(name: string): Rule<T>;
+    setValue(value: T): Rule<T>;
+    setPriority(priority: number): Rule<T>;
+    validate(): Rule<T>;
+}
+
+declare export class CustomRule extends ValidationRule<mixed> {
+    constructor(validateFunc: ValidateFunction<mixed>, errorMessage?: string): void;
+}
+declare export function rule(validateFunc: ValidateFunction<mixed>, errorMessage?: string): Rule<mixed>;
+
+declare export class Email extends ValidationRule<string> {}
+export const email: Rule<string> = new Email();
+
+declare export class Integer extends ValidationRule<mixed>{}
+export const integer: Rule<mixed> = new Integer();
+
+declare export class Max extends ValidationRule<ComparableType> {
+    constructor(max: ComparableType | () => ComparableType): void;
+    max: ComparableType | () => ComparableType;
+}
+declare export function max(maxVal: ComparableType | () => ComparableType): Rule<ComparableType>;
+
+declare export class Min extends ValidationRule<ComparableType> {
+    constructor(min: ComparableType | () => ComparableType): void;
+    min: ComparableType | () => ComparableType;
+}
+declare export function min(minVal: ComparableType | () => ComparableType): Rule<ComparableType>;
+
+declare export class Numeric extends ValidationRule<string>{}
+export const numeric: Rule<string> = new Numeric();
+
+declare export class Regex extends ValidationRule<string> {
+    constructor(pattern: RegExp | string, flags?: string): void;
+}
+declare export function regex(pattern: RegExp | string, flags?: string): Rule<string>;
+
+declare export class Required extends ValidationRule<mixed> {
+    constructor(_if?: mixed => boolean): void;
+    static If(_if: mixed => boolean): Required;
+}
+class RequiredIf extends Required {
+    if: (mixed => boolean) => Required = Required.If.bind(null);
+}
+export const required: RequiredIf = new RequiredIf();
+
+declare export class StrLength extends ValidationRule<StrLengthType> {
+    constructor(min?: number, max?: number): void;
+    min: number | void;
+    max: number | void;
+}
+declare export function strlen(min: number, max?: number): Rule<StrLengthType>;
+declare export function strlenmax(max: number): Rule<StrLengthType>;
