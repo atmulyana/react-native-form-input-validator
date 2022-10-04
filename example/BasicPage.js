@@ -9,6 +9,8 @@ import * as React from 'react';
 import type {Node} from 'react';
 import {
     Button,
+    Modal,
+    Platform,
     StyleSheet,
     Text,
     TextInput,
@@ -130,9 +132,10 @@ export default (): Node => {
             <Text style={[styles.label, {paddingTop: 20}]}>Domicile</Text>
             <View style={styles.flex3}>
                 <DomicileInput
+                    numberOfLines={1}
                     onValueChange={setDomicile}
                     selectedValue={domicile}
-                    style={[styles.border, {backgroundColor: '#ddd' }]}
+                    style={[styles.border, {backgroundColor: '#ddd'}]}
                     itemStyle={styles.pickerItem}
                 >
                     <Picker.Item label="--Please Choose--" value="" style={styles.pickerItem} />
@@ -254,6 +257,23 @@ class NamePart extends React.PureComponent<{
     }
 }
 
+const Calendar: (props: {display: string, onChange?: (mixed, ?Date) => void, value: Date}) => Node = Platform.OS == 'android'
+    //$FlowIgnore[incompatible-exact]
+    //$FlowIgnore[prop-missing] Incomplete declaration in RNDatePicker
+    ? props => <RNDatePicker display="calendar" {...props} />
+    
+    : props => (
+        <Modal transparent={true}>
+            <View style={[StyleSheet.absoluteFill, {alignItems: 'center', justifyContent: 'center'}]}>
+                <TouchableOpacity
+                    onPress={() => props.onChange && props.onChange(null, props.value)}
+                    style={[StyleSheet.absoluteFill, {backgroundColor: 'black', opacity: 0.5}]}
+                />
+                {/** $FlowIgnore[prop-missing] Incomplete declaration in RNDatePicker */}
+                <RNDatePicker {...props} display="inline" style={[{backgroundColor: 'white', height: 400, width: 350}, props.style]} />
+            </View>
+        </Modal>
+    );
 
 const dateFormatter = new JsSimpleDateFormat("MMMM d, yyyy");
 const DatePicker = React.memo(function({onChange, style, value = new Date(), ...props}): Node {
@@ -293,8 +313,7 @@ const DatePicker = React.memo(function({onChange, style, value = new Date(), ...
             <TouchableOpacity style={iconStyle} onPress={showCalendar}>
                 <CalendarIcon height={iconSize} stroke="black" width={iconSize} />
             </TouchableOpacity>
-            {/** $FlowIgnore[prop-missing] Incomplete declaration in RNDatePicker */}
-            {calendarVisible && <RNDatePicker display="calendar" onChange={onChangeHandler} value={value} {...props} />}
+            {calendarVisible && <Calendar onChange={onChangeHandler} value={value} {...props} />}
         </>
     );
 });

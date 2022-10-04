@@ -29,6 +29,7 @@ import {
     email,
     required,
 } from 'react-native-form-input-validator/rules';
+import server from './server';
 
 const UserName = withValidation(TextInput, {
     rules: [email, required],
@@ -38,7 +39,6 @@ const Password = withValidation(TextInput, {
     rules: required,
     setStatusStyle: setStatusStyleDefault,
 });
-import server from './server';
 
 export default function LoginForm() {
     const validationRef = React.createRef();
@@ -137,7 +137,7 @@ status of those inputs. You may treat this element like `form` tag in HTML docum
 </tr>
 </table>
 
-#### **Methods of `ValidationContext` reference (the object that is set by `ref` property):**
+#### **Methods of `ValidationContext` reference (the object that we get from `ref` property):**
 - `clearValidation` <a name="ValidationContext_method-clearValidation"></a>   
   It executes [`clearValidation`](#withValidation_method-clearValidation) method of all contained inputs to clear the validation
   status of all contained inputs.
@@ -317,7 +317,7 @@ function PercentageInput({
 </tr>
 </table>
 
-#### **Methods and property of the input reference (the object that is set by `ref` property):** <a name="withValidation_methods_property"></a>
+#### **Methods and property of the input reference (the object that we get from `ref` property):** <a name="withValidation_methods_property"></a>
 - `clearValidation` <a name="withValidation_method-clearValidation"></a>   
   It's to clear validation status. The error message will disappear and the input style is reverted to normal. After executing this
   method, [`isValid`](#withValidation_property-isValid) will be reset to `true` even if the input is invalid. If

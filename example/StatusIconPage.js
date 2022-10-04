@@ -111,7 +111,8 @@ export default function() {
     return <>
         <Text style={[styles.text, {fontSize: 16, fontWeight: 'bold', lineHeight: 20, marginBottom: 10, textAlign: 'center'}]}>Validation Status Icon</Text>
         <Text style={[styles.text, {marginBottom: 10}]}>We'll see more fancy validation status which uses an icon. The input is validated
-        when it's lost of focus. Try to enter a valid and invalid phone number to the input (valid pattern:{' '}
+        when it's lost of focus (For iOS, if it can't remove focus from TextInput, please change the source code to enable auto option). Try to enter a valid
+        and invalid phone number to the input (valid pattern:{' '}
         <Text style={{fontWeight:'bold'}}>0ddd-dddd-dddd</Text>).</Text>
 
         <View style={styles.inputRow}>
