@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
 You have seen the example above. You may concern to `withValidation` and `ValidationContext` most. At a glance, you may have concluded
 that `withValidation` is to specify the validation rules for the input and `ValidationContext` is to validate all inputs inside it.
 Actually, each input can be validated individually and doesn't need to be put inside `ValidationContext` (see detailly
-[here](#withValidation_method-validate)). `ValidationContext` exists to validate many input at once.
+[here](#user-content-withValidation_method-validate)). `ValidationContext` exists to validate many input at once.
 
 
 ## **`ValidationContext`** <a name="ValidationContext"></a>
