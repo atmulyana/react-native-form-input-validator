@@ -95,6 +95,7 @@ declare module "react-native-form-input-validator/rules" {
         if: (mixed => boolean) => Required;
     }
     declare export var required: RequiredIf;
+    declare export var alwaysValid: Required;
     
     declare export class StrLength extends ValidationRule<StrLengthType> {
         constructor(min?: number, max?: number): void;

@@ -21,8 +21,9 @@ declare export class Validation extends React.Component<ValidationProps> impleme
     constructor(props: ValidationProps): void;
     index: number;
     get isValid(): boolean;
-    validate(): boolean;
     clearValidation(): void;
+    validate(): boolean;
+    setErrorMessage(message: string): void;
 }
 
 declare export function isDifferentStyle(style1: StyleProp, style2: StyleProp): boolean;

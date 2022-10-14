@@ -163,6 +163,7 @@ export default (): Node => {
                 </TransportInput>
             </View>
         </View>
+        
         <View style={styles.inputRow}>
             <View style={styles.flex1} />
             <View style={styles.flex3}>
@@ -242,7 +243,7 @@ class NamePart extends React.PureComponent<{
     title: string,
     value?: string,
 }> {
-    static defaultProps = {
+    static defaultProps: {Input: React.AbstractComponent<TextInputProps>} = {
         Input: TextInput,
     };
 
@@ -257,23 +258,47 @@ class NamePart extends React.PureComponent<{
     }
 }
 
-const Calendar: (props: {display: string, onChange?: (mixed, ?Date) => void, value: Date}) => Node = Platform.OS == 'android'
+const Calendar: (props: {display: string, onChange?: (mixed, ?Date) => void, style: ViewStyleProp, value: Date}) => Node = Platform.OS == 'android'
     //$FlowIgnore[incompatible-exact]
     //$FlowIgnore[prop-missing] Incomplete declaration in RNDatePicker
     ? props => <RNDatePicker display="calendar" {...props} />
     
-    : props => (
-        <Modal transparent={true}>
+    : props => {
+        let value = props.value;
+        return <Modal transparent={true}>
             <View style={[StyleSheet.absoluteFill, {alignItems: 'center', justifyContent: 'center'}]}>
                 <TouchableOpacity
                     onPress={() => props.onChange && props.onChange(null, props.value)}
                     style={[StyleSheet.absoluteFill, {backgroundColor: 'black', opacity: 0.5}]}
                 />
                 {/** $FlowIgnore[prop-missing] Incomplete declaration in RNDatePicker */}
-                <RNDatePicker {...props} display="inline" style={[{backgroundColor: 'white', height: 400, width: 350}, props.style]} />
+                <RNDatePicker {...props}
+                    display="inline"
+                    onChange={(event, date) => {
+                        if (!date) return;
+                        if (date.getFullYear() == value.getFullYear() && date.getMonth() == value.getMonth()) {
+                            if (props.onChange) props.onChange(event, date);
+                        }
+                        else {
+                            //The users pick a new year/month but not necessarily intend to close calendar
+                        }
+                        value = date;
+                    }}
+                    style={[{backgroundColor: 'white', height: 400, width: 350}, props.style]}
+                />
+                <View style={{flexDirection: 'row', justifyContent:'flex-end', width:350}}>
+                    <Text
+                        onPress={() => props.onChange && props.onChange(null, props.value)}
+                        style={{backgroundColor: 'white', color:'#307df6', fontWeight:'bold', paddingHorizontal:10, paddingVertical:2}}
+                    >CANCEL</Text>
+                    <Text
+                        onPress={() => props.onChange && props.onChange(null, value)}
+                        style={{backgroundColor: 'white', color:'#307df6', fontWeight:'bold', paddingHorizontal:10, paddingVertical:2}}
+                    >OK</Text>
+                </View>
             </View>
-        </Modal>
-    );
+        </Modal>;
+    };
 
 const dateFormatter = new JsSimpleDateFormat("MMMM d, yyyy");
 const DatePicker = React.memo(function({onChange, style, value = new Date(), ...props}): Node {
@@ -398,7 +423,7 @@ const RequiredOptions = withValidation(RadioButtons, {
 });
 
 
-function ChildsInput({style, ...props}) {
+function ChildsInput({style, ...props}: {style: ViewStyleProp}) {
     const red = '#dc3545';
     const inputStyle: {flex: 0, width: 40, color?: string, borderColor?: string} = {flex: 0, width: 40};
     if (Array.isArray(style)) { //invalid status

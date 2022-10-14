@@ -65,6 +65,7 @@ class RequiredIf extends Required {
     if: (mixed => boolean) => Required = Required.If.bind(null);
 }
 export const required: RequiredIf = new RequiredIf();
+export const alwaysValid: Required = Required.If(() => false);
 
 declare export class StrLength extends ValidationRule<StrLengthType> {
     constructor(min?: number, max?: number): void;
