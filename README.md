@@ -327,7 +327,7 @@ function PercentageInput({
 #### **Methods and property of the input reference (the object that we get from `ref` property):** <a name="withvalidation_methods_property"></a>
 - `clearValidation` <a name="withvalidation_method-clearvalidation"></a>   
   It's to clear validation status. The error message will disappear and the input style is reverted to normal. After executing this
-  method, [`isValid`](#user-content-withvalidation_property-isValid) will be reset to `true` even if the input is invalid. If
+  method, [`isValid`](#user-content-withvalidation_property-isvalid) will be reset to `true` even if the input is invalid. If
   [`auto`](#user-content-withvalidation-auto) validation is disabled, this method will be called when the user changes the input value
   right after the validation.
 
@@ -658,7 +658,7 @@ This is the base class for all rule objects. Therefore, all object rules must ha
   is to set [`name`](#user-content-validationrule_property-name) propety.
 
 - `setPriority` <a name="validationrule_method-setpriority"></a>  
-  is to set [`setPriority`](#user-content-validationrule_property-priority). You should set a non-negative number.
+  is to set [`priority`](#user-content-validationrule_property-priority). You should set a non-negative number.
 
 - `setValue` <a name="validationrule_method-setvalue"></a>  
   is to set [`value`](#user-content-validationrule_property-value) property.
