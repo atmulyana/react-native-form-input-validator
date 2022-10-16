@@ -374,7 +374,7 @@ function PercentageInput({
         if (contextRef.current?.validate()) {
             validateAsync().then(() => {
                 if (userNameInput.current?.isValid)
-                    server.saveUser(collectFormDate());
+                    server.saveUser(collectFormData());
             })
         }
  
@@ -391,7 +391,7 @@ function PercentageInput({
 
         <NameTextInput ref={nameInput} onBlur={() => nameInput.current?.validate()} onChangeText={setName} value={name} />
 
-If the original input has the same methods and property as listed above, they will be overriden. If you want to invoke the overridden
+If the original input has the same methods and property as listed above, they will be overriden. If you want to access the overridden
 method/property of original input, follow the example below:
 
     const inputRef = React.useRef();
@@ -480,25 +480,33 @@ This function does more detailedly than a shallow compare. Let's explain in the 
 So, the function simply just compares the entry in the array at the same index. The more detailedly logic can be done to make sure
 that they are really different but it can cause a more complicated process that won't help increasing performance.
 
-To help increasing performance, you must also set the style value to a contant value, not variable. For example:
+To help increasing performance, you must also set the style value to a constant value, not variable. For example:
 
     const styles = StyleSheet.create({
         input: {borderWidth: 1, ...},
         hightlight: {...},
     });
     const Input = withValidation(TextInput, ...);
+    ...
+    export default function Form(props) {
+        ...
+        return (
+            ...
+            //It's BAD example
+            <Input style={{borderWidth: 1, ...}} ... />
 
-    //It's BAD example
-    <Input style={{borderWidth: 1, ...}} ... />
+            //It's good
+            <Input style={styles.input} ... />
 
-    //It's good
-    <Input style={styles.input} ... />
-
-    //If you want make a diiferent style for a condition, it's good example
-    <Input style={[
-        styles.input,
-        highlighted ? styles.hightlight : null,
-    ]} ... />
+            //If you want to make a diiferent style for
+            //a condition, it's a good example
+            <Input style={[
+                styles.input,
+                highlighted ? styles.hightlight : null,
+            ]} ... />
+            ...
+        );
+    }
 
 
 ## **`Validation`** <a name="validation"></a>

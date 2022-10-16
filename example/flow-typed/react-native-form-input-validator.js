@@ -4,7 +4,9 @@
  * @format
  * @flow
  */
+//$FlowIgnore[toplevel-library-import]
 import * as React from 'react'
+//$FlowIgnore[toplevel-library-import]
 import type {
     ComparableType,
     ContextProps,
@@ -17,9 +19,8 @@ import type {
     ValidationOption,
     ValidationProps,
     InputRef,
-//$FlowIgnore[cannot-resolve-module]
 } from '../../lib/types';
-//$FlowIgnore[cannot-resolve-module]
+//$FlowIgnore[toplevel-library-import]
 import {Rule} from '../../lib/types';
 
 declare module "react-native-form-input-validator" {
