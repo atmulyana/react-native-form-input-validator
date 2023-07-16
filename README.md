@@ -115,7 +115,7 @@ for this element are:
     <th>Default value</th>
 </tr>
 <tr>
-    <td valign="top"><code>asyncFailMessage</code><a name="validationcontext-asyncFailMessage"></a></td>
+    <td valign="top"><code>asyncFailMessage</code><a name="validationcontext-asyncfailmessage"></a></td>
     <td valign="top">
         enum: <code>AsyncFailMessage {</code><br/>
         <code>Default,</code><br/>
@@ -210,7 +210,7 @@ discuss the option properties more detailedly. The only property you must specif
         <code>}</code>
     </td>
     <td valign="top">The purpose of this option is the same as
-        <a href="#user-content-validationcontext-asyncFailMessage"><code>asyncFailMessage</code></a> for
+        <a href="#user-content-validationcontext-asyncfailmessage"><code>asyncFailMessage</code></a> for
         <code>ValidationContext</code>. If specified and inside a <code>ValidationContext</code>, it will override the specified one
         for <code>ValidationContext</code>.</td>
     <td valign="top">None (optional)</td>
@@ -867,7 +867,7 @@ app.get('/check-validity', function(req, res) {
 });
 ```
 
-### **`new Integer()` or `integer`** <a name="email"></a>
+### **`new Integer()` or `integer`** <a name="integer"></a>
 Checks if the input value is integer or not. If the input value is a string (such as getting from `TextInput`) and you want
 it considered as number, you must also specify [`numeric`](#user-content-numeric) rule for the input. The `numeric` rule must
 have higher [`priority`](#user-content-validationrule_property-priority) (default).
@@ -909,7 +909,7 @@ returns `true` then the input is required. Otherwise, it's optional. The paramet
 Use this rule if you want to only use [`setErrorMessage`](#user-content-withvalidation_method-seterrormessage) method without
 applying any other rules.
 
-### **`new CustomRule(predicate, errorMessage)` or `rule(predicate, errorMessage)`** <a name="rule"></a>
+### **`new CustomRule(predicate, errorMessage)` or `rule(predicate, errorMessage)`** <a name="customrule"></a>
 If you need more complicated logic to assess whether the input value is valid or invalid, this rule fits for it. The `predicate`
 parameter is a function to asses the input value. The parameter of this function is the input value. The `predicate` function
 may return `boolean` (`true` is valid, `false` is invalid) or a string. If it returns a string then the input is considered as
@@ -941,7 +941,7 @@ rule(
 ```
 
 ### **`new CustomRuleAsync(predicate, errorMessage)` or `ruleAsync(predicate, errorMessage)`** <a name="ruleasync"></a>
-It is almost the same as [`rule`](#user-content-rule) rule. The difference is it runs in asynchronous mode. The `predicate` function
+It is almost the same as [`rule`](#user-content-customrule) rule. The difference is it runs in asynchronous mode. The `predicate` function
 for this rule doesn't return anything. As a replacement, to set the validation status (valid/invalid or the error message), it has a
 second parameter which is a function. The validation status is set using this function.
 #### **Example:** <a name="ruleasync_example"></a>
