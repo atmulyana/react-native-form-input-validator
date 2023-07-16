@@ -41,15 +41,27 @@ const Password = withValidation(TextInput, {
 });
 
 export default function LoginForm() {
-    const validationRef = React.createRef();
+    const validationRef = React.useRef();
     const [userName, setUserName] = React.useState('');
     const [password, setPassword] = React.useState('');
     
     return (
         <ValidationContext ref={validationRef}>
             <Text style={styles.title}>Please login:</Text>
-            <UserName autoCorrect={false} onChangeText={setUserName} placeholder="Email" style={styles.input} value={userName} />
-            <Password onChangeText={setPassword} placeholder="Password" secureTextEntry style={styles.input} value={password} />
+            <UserName
+                autoCorrect={false}
+                onChangeText={setUserName}
+                placeholder="Email"
+                style={styles.input}
+                value={userName}
+            />
+            <Password
+                onChangeText={setPassword}
+                placeholder="Password"
+                secureTextEntry
+                style={styles.input}
+                value={password}
+            />
             <View style={styles.buttonRow}>
                 <Button
                     onPress={() => {
@@ -103,9 +115,24 @@ for this element are:
     <th>Default value</th>
 </tr>
 <tr>
+    <td valign="top"><code>asyncFailMessage</code><a name="validationcontext-asyncFailMessage"></a></td>
+    <td valign="top">
+        enum: <code>AsyncFailMessage {</code><br/>
+        <code>Default,</code><br/>
+        <code>CaughtError</code><br/>
+        <code>}</code>
+    </td>
+    <td valign="top">When executing <a href="#user-content-withvalidation_method-validateasync"><code>validateAsync</code></a> method
+        happens an error, this prop specify which error message should displayed. By default, the displayed message is "cannot
+        validate". But, if the prop value is <code>AsyncFailMessage.CaughtError</code> then the displayed message is taken from the
+        message of the thrown error.</td>
+    <td valign="top"><code>AsyncFailMessage.Default</code></td>
+</tr>
+<tr>
     <td valign="top"><code>auto</code><a name="validationcontext-auto"></a></td>
     <td valign="top"><code>boolean</code></td>
-    <td valign="top">If <code>true</code> then all inputs inside it will be validated automatically when the user types/changes the input value.</td>
+    <td valign="top">If <code>true</code> then all inputs inside it will be validated automatically when the user types/changes the
+        input value.</td>
     <td valign="top"><code>false</code></td>
 </tr>
 <tr>
@@ -152,6 +179,10 @@ for this element are:
   It executes [`validate`](#user-content-withvalidation_method-validate) method of all contained inputs to validate all contained inputs. This
   method returns `false` if any invalid input and returns `true` otherwise.
 
+- `validateAsync` <a name="validationcontext_method-validateasync"></a>   
+  It executes [`validateAsync`](#user-content-withvalidation_method-validateasync) method of all contained inputs to validate all
+  contained inputs. This method returns a `Promise` object that will resolve to `false` if any invalid input or `true` if otherwise.
+
 
 ## **`withValidation`** <a name="withvalidation"></a>
 
@@ -162,7 +193,7 @@ The object has properties which specify validation rules and the other attribute
 for the input, the second parameter can a [rule](#user-content-rule) object or an array of [rule](#user-content-rule) objects.
 
 I think the [example](#user-content-brief_example) above is enough to depict how to use this function. So, in this section, we will
-discuss the option properties more detailedly. The only property you must specify is `rules`. <a name="withValidation-option-properties"></a>
+discuss the option properties more detailedly. The only property you must specify is `rules`. <a name="withvalidation-option-properties"></a>
 <table>
 <tr>
     <th>Name</th>
@@ -171,11 +202,27 @@ discuss the option properties more detailedly. The only property you must specif
     <th>Default value</th>
 </tr>
 <tr>
+    <td valign="top"><code>asyncFailMessage</code><a name="withvalidation-asyncFailMessage"></a></td>
+    <td valign="top">
+        enum: <code>AsyncFailMessage {</code><br/>
+        <code>Default,</code><br/>
+        <code>CaughtError</code><br/>
+        <code>}</code>
+    </td>
+    <td valign="top">The purpose of this option is the same as
+        <a href="#user-content-validationcontext-asyncFailMessage"><code>asyncFailMessage</code></a> for
+        <code>ValidationContext</code>. If specified and inside a <code>ValidationContext</code>, it will override the specified one
+        for <code>ValidationContext</code>.</td>
+    <td valign="top">None (optional)</td>
+</tr>
+<tr>
     <td valign="top"><code>auto</code><a name="withvalidation-auto"></a></td>
     <td valign="top"><code>boolean</code></td>
     <td valign="top">If <code>true</code> then the input will be validated automatically when the user types/changes the input value.
-        If specified, it will override the specified <a href="#user-content-validationcontext-auto"><code>auto</code></a> for
-        <code>ValidationContext</code>
+        If specified and inside a <code>ValidationContext</code>, it will override the specified
+        <a href="#user-content-validationcontext-auto"><code>auto</code></a> for <code>ValidationContext</code>. This option is ignored
+        (cannot use auto validation) when you set one or more <a href="#user-content-validationruleasync">asynchronous rule</a> for
+        <a href="#user-content-withvalidation-rules"><code>rules</code></a>
     </td>
     <td valign="top">None (optional)</td>
 </tr>
@@ -273,8 +320,8 @@ function PercentageInput({
         you can check the second parameter.<br/>
         <b>Parameters:</b>
         <ul>
-            <li><code>props</code> is the properties of input. The property you should care about is that which holds holds style value
-                for the input, usullly named <code>style</code>.</li>
+            <li><code>props</code> is the properties of input. The property you should care about is that which holds style value for the
+                input, usullly named <code>style</code>.</li>
             <li><code>style</code> is the style value that should be assigned to the input style property. When invalid, this parameter
                 is array of two entries, the first is <a href="#user-content-validationcontext-inputerrorstyle"><code>inputErrorStyle</code></a>
                 of <code>ValidationContext</code> and the second is
@@ -331,65 +378,60 @@ function PercentageInput({
   [`auto`](#user-content-withvalidation-auto) validation is disabled, this method will be called when the user changes the input value
   right after the validation.
 
-- `isValid` <a name="withvalidation_property-isValid"></a>  
+- `isValid` <a name="withvalidation_property-isvalid"></a>  
   It shows the validation status of input. It's `true` if valid and `false` if invalid. The value of this property is trusted after
   calling [`validate`](#user-content-withvalidation_method-validate).
 
 - `setErrorMessage(message)` <a name="withvalidation_method-seterrormessage"></a>  
   This method can set the error message for the input without calling [`validate`](#user-content-withvalidation_method-validate). It
-  won't validate any [rule](#user-content-withvalidation-rules) that has been applied to the input. This method is useful if you need
-  to validate the input on the server, such as it needs to compare to the saved values in the database. For example, the following
-  block of code expects the inputed user name is unique.
+  won't validate any [rule](#user-content-withvalidation-rules) that has been applied to the input. 
 
-        const validateAsync = () => new Promise((resolve, reject) => {
-            fetch(
-                `https://yourserver.com/validate/unique-user-name?uname=${encodeURIComponent(userName)}`
-            ).then(async (response) => {
-                if (response.ok) return response.json();
-                reject(await response.text());
-            }).then(data => {
-                if (data.userNameExists) {
-                    userNameInput.current?.setErrorMessage('The user name has been used');
-                    resolve(false);
-                }
-                else {
-                    resolve(true);
-                }
-            }).catch(err => {
-                reject(err);
-            });
-        })
-        .catch(err => {
-            /*If there is a problem with the server, you may tell the user here or you may just keep it silent and
-              try to re-validate it on the server when the form is submitted. In fact, backend validation is still
-              needed all time to avoid tampered data.*/
-            //userNameInput.current?.setErrorMessage('The server cannot validate');
-        });
-        <UserNameInput ref={userNameInput} onBlur={validateAsync} onChangeText={setUserName} value={userName} />
+  For example, we need to validate the input on the server because we must read the database to make sure the inputed user name is
+  unique. (NOTE: The example below should be solved using [asynchronous validation](#user-content-asynchronous_validation) interfaces).
+  ```javascript
+  const validateAsync = () => new Promise((resolve, reject) => {
+      fetch(
+          `https://yourserver.com/validate/unique-user-name?uname=${encodeURIComponent(userName)}`
+      ).then(async (response) => {
+          if (response.ok) return response.json();
+          reject(await response.text());
+      }).then(data => {
+          if (data.userNameExists) {
+              userNameInput.current?.setErrorMessage('The user name has been used');
+              resolve(false);
+          }
+          else {
+              resolve(true);
+          }
+      }).catch(err => {
+          reject(err);
+      });
+  })
+  .catch(err => {
+      /*If there is a problem with the server, you may tell the user here or you may just keep it silent and
+        try to re-validate it on the server when the form is submitted. In fact, backend validation is still
+        needed all time to avoid tampered data.*/
+      //userNameInput.current?.setErrorMessage('The server cannot validate');
+  });
+  <UserNameInput ref={userNameInput} onBlur={validateAsync} onChangeText={setUserName} value={userName} />
+  ```
 
-    If you have remote/asynchronous validation like in this example, you should invoke the validation along with invoking
-    [`validate`](#user-content-validationcontext_method-validate) method when the form is submitted. The submit button click
-    handler will look like this:
-
-        if (contextRef.current?.validate()) {
-            validateAsync().then(() => {
-                if (userNameInput.current?.isValid)
-                    server.saveUser(collectFormData());
-            })
-        }
- 
-    `contextRef` is the reference of the enclosing [`ValidationContext`](#user-content-validationcontext). If you have some
-    asynchronous validations, please take the advantage of
-    [`Promise.all`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all).
-
-    Need to remember that [`rules`](#user-content-withvalidation-rules) option is required. If you want to use `setErrorMessage`
-    method but doesn't need to apply any validation rule, you can use [`alwaysValid`](#user-content-alwaysvalid) rule.
+  Need to remember that [`rules`](#user-content-withvalidation-rules) option is required. If you want to use `setErrorMessage`
+  method but doesn't need to apply any validation rule, you can use [`alwaysValid`](#user-content-alwaysvalid) rule.
 
 - `validate` <a name="withvalidation_method-validate"></a>  
   This method is to validate the input based on the specified [rules](#user-content-withvalidation-rules). Below is the example how to
   validate input when it's lost focus.   
 
         <NameTextInput ref={nameInput} onBlur={() => nameInput.current?.validate()} onChangeText={setName} value={name} />
+
+  This method returns `true` if input value is valid or `false` if invalid. This method will throw an error if there is a [rule object
+  which does the asynchronous validation](#user-content-validationruleasync).
+
+- `validateAsync` <a name="withvalidation_method-validateasync"></a>  
+  As [`validate`](#user-content-withvalidation_method-validate), this method is also to validate the input based on the specified
+  [rules](#user-content-withvalidation-rules) but the process is executed in asynchronous mode. This method returns a `Promise` object
+  that will resolve to `true` if the input value is valid or `false` if otherwise.
 
 If the original input has the same methods and property as listed above, they will be overriden. If you want to access the overridden
 method/property of original input, follow the example below:
@@ -406,7 +448,7 @@ method/property of original input, follow the example below:
 
 
 
-## Style Handling <a name="style_handling"></a>
+## **Style Handling** <a name="style_handling"></a>
 
 To make the input and the error message stick together, [`withValidation`](#user-content-withvalidation) wraps them into a `View`
 container. However, we want the component yielded by [`withValidation`](#user-content-withvalidation) behaves the same as the original
@@ -416,7 +458,7 @@ the style for the input. Because now, the input is inside a `View` container. We
 same style as if the input is unwrapped. The big concern is all style attributes dealing with layout. That is how the parent of input
 arranges the area for input, before. Because now, the parent must arrange the `View` container. Therefore, the component yielded by
 [`withValidation`](#user-content-withvalidation) will move all style attributes dealing with layout to be the style attributes of `View`
-container. Then, the input mus be set to fill the area of `View` container.
+container. Then, the input must be set to fill the area of `View` container.
 
 We know, the value for style property is not always plain object or a falsy value but it can be a recursive array. Therefore, the first
 step is to flatten it if it's an array. Fortunately, react native has provided `StyleSheet.flatten` function to do that. After getting
@@ -498,7 +540,7 @@ To help increasing performance, you must also set the style value to a constant 
             //It's good
             <Input style={styles.input} ... />
 
-            //If you want to make a diiferent style for
+            //If you want to make a different style for
             //a condition, it's a good example
             <Input style={[
                 styles.input,
@@ -509,7 +551,39 @@ To help increasing performance, you must also set the style value to a constant 
     }
 
 
-## **`Validation`** <a name="validation"></a>
+## **Asynchronous Validation** <a name="asynchronous_validation"></a>
+
+In some cases, we need to execute the validation process in asynchronous mode. The prominent example is when we need to call back the
+server to check the validity of input value. May be, we need to check the database to ensure the input is valid or not. For making an
+HTTP request purpose, this package has provided [`httpReq`](#user-content-httpreq) rule.
+
+To make the process of validation in asynchronous mode, first thing you need is a rule object that can validate a value asynchronously.
+This package has provided some rule objects that can make the process asynchronously. One of them has been mentioned before, that is
+`httpReq`. The another one is [`ruleAsync`](#user-content-ruleasync). If these rule objects don't satisfy you, create your own rule
+class which inherits [`ValidationRuleAsync`](#user-content-validationruleasync) class.
+
+After you defines the asynchronous rule(s), as usual, set the rule(s) to [`rules`](#user-content-withvalidation-rules) option of 
+[`withValidation`](#user-content-withvalidation). You may mix asynchronous and synchronous rules.
+[`priority`](#user-content-validationrule_property-priority) property still applies as appropriately (an asynchronous rule won't be
+examined after a synchronous rule that has lower priority).
+
+The last step, to validate the input(s) asynchronously, you must call
+[`validateAsync`](#user-content-withvalidation_method-validateasync) method of the input reference or
+[`validateAsync`](#user-content-validationcontext_method-validateasync) method of the context reference. Both methods return a
+`Promise` object. So, if you want to get the validation result, you should use the following statement:
+
+    inputRef.validateAsync()
+        .then(isValid => {
+            //... rest of your code
+        });
+
+or
+
+    let isValid = await inputRef.validateAsync();
+
+The last statement must be inside an `async` function.
+
+## **`Validation` Component** <a name="validation"></a>
 
 `Validation` component can be used to validate a value without wrapping an input component. It has some properties which are the same as
 `withValidion` [option](#user-content-withvalidation-option-properties). These properties are `auto`, `errorTextStyle`, `lang` and
@@ -598,13 +672,14 @@ will return string `"count must be at least 5"`.
 
 Rule object defines how to validate the input value. For example whether it's required (cannot be empty), must be a numeric value,
 must be minimum at a certain value etc. The rule object is reponsible to check whether the input value meets the desired condition
-or not, to be valid. Mostly, one rule object is responsible to check only one condition. Howerver, we can combine some rule objects
+or not, to be valid. Mostly, one rule object is responsible to check only one condition. However, we can combine some rule objects
 so that the input value must meet some conditions to be valid. This is why `withValidation` [rules](#user-content-withvalidation-rules)
 option can be a single rule object or an array of rule objects.
 
 This package has some *built-in* rule objects which are ready to use. These rule objects are explained in the next sections.
-You can create your own rule object by creating a class that extendes [`ValidationRule`](#user-content-validationrule). All rule
-objects are imported from `'react-native-form-input-validator/rules'`.
+You can create your own rule object by creating a class that extends [`ValidationRule`](#user-content-validationrule) or
+[`ValidationRuleAsync`](#user-content-validationruleasync). All rule objects are imported from
+`'react-native-form-input-validator/rules'`.
 
 ### **`ValidationRule`** <a name="validationrule"></a>
 
@@ -647,6 +722,7 @@ This is the base class for all rule objects. Therefore, all object rules must ha
   + `max`, `min`
   + `regex`
   + `rule`
+  + `httpReq`, `ruleAsync`
 
   If two rules have the same priority, the order in the [`rules`](#user-content-withvalidation-rules) array determines which one first.
 
@@ -693,7 +769,7 @@ or in unit test:
 
     expect(email.setValue('abc').validate().isValid).toBe(false);
 
-#### **Example:**
+#### **Example:** <a name="validationrule_example"></a>
 An example class which you may create to validate a credit card number:
 ```javascript
 import {ValidationRule} from 'react-native-form-input-validator/rules';
@@ -709,17 +785,87 @@ export class CreditCardNumber extends ValidationRule {
         return this.lang('invalid credit card number');
     }
 
-    validate(): Rule<string> {
+    validate() {
         this.isValid = validator.number(this.value).isValid;
         return this;
     }
 }
 
-const ccNumber = new CreditCardNumber(); //`ccNumber` is more convienent to write than `new CreditCardNumber()`
+export const ccNumber = new CreditCardNumber(); //`ccNumber` is more convienent to write than `new CreditCardNumber()`
 ```
+
+### **`ValidationRuleAsync`** <a name="validationruleasync"></a>
+
+All rule objects which do validation in asynchronous mode, should inherit this class. This class has all methods and properties as
+owned by [`ValidationRule`](#user-content-validationrule) except the `validate` method of this class return a `Promise` object. For
+example, we have to validate a credit card number input like in [`ValidationRule` example](#user-content-validationrule_example). But
+here, we have a list of valid card numbers in database. So, it must make an HTTP request to ask server to validate the number. We
+change `validate` method in the example before to be:
+```javascript
+    async validate() {
+        this.isValid = await fetch(
+            `https://wwww.yourserver.com/check-cc-number?number=${encodeURIComponent(this.value)}`
+        ).then(response => {
+            //If card number has been registered in database, server returns HTTP status code 200 (OK)
+            //If not, server returns 404 (Not Found)
+            return response.ok;
+        });
+        return this;
+    }
+```
+
 
 ### **`new Email()` or `email`** <a name="email"></a>
 The rule for examined the input value whether it's a valid email address or not.
+
+### **`new HttpReq(uri, option)` or `httpReq(uri, option)`** <a name="httpreq"></a>
+This rule will make an HTTP request to validate the value. The validation is executed in asynchronous mode.
+#### **Parameters:** <a name="httpreq_parameters"></a>
+- `uri` is the URI string for HTTP request. This parameter is required.
+- `option` defines the settings for HTTP request. This parameter is optional. `option` is a plain object whose one or more properties
+  listed below (all properties are optional):
+  + `data` is request data that will be sent to server. `data` can be a plain object or a `URLSearchParams` object. If `data` is set
+    then the request will use POST method. [`name`](#user-content-validationrule_property-name) and
+    [`value`](#user-content-validationrule_property-value) will be automatically included in `data` (you doesn't need to set them in
+    `data`).   
+    If `data` is not set then the request will use GET method. [`name`](#user-content-validationrule_property-name) and
+    [`value`](#user-content-validationrule_property-value) will be inserted into URI string as the query part. If you want to use
+    POST method but have no data other than [`name`](#user-content-validationrule_property-name) and 
+    [`value`](#user-content-validationrule_property-value), set `data` as an empty object (`{}`) or as `new URLSearchParams()` without
+    setting any data.
+  + `headers` is a plain object contains request HTTP headers. The keys of object are the header names and their values are their
+    corresponding header values. For example:
+
+        httpReq(
+            'https://www.yourserver.com/checkdata',
+            {
+                headers: {
+                    { Authorization: `Bearer ${publicKey}` },
+                    {'X-Requested-With': 'MyApp'}
+                }
+            }
+        )
+
+  + `silentOnFailure` if it's `true` then there won't be any error message if a problem happens to the server response. The problems
+    that can happen are timeout, response code is not ok etc. The input value is also considered valid. You must revalidate the input
+    value on the server. In fact, backend validation on the server is still needed all time to avoid tampered data. By default,
+    `silentOnFailure` is `false` (there will be an error message if a problem happens).
+  + `timeout` defines the connection timeout in milliseconds. The default value is 0 (no timeout).
+
+The server script that handles the request made by this rule object must return a boolean value (`true` is valid or `false` is invalid)
+or a string of the error message. For example, if using node express, the code would look like the following one:
+```javascript
+app.get('/check-validity', function(req, res) {
+    const validity = validate(req.query.value); //suppose the function returns object: {isValid: boolean, errorMessage: string}
+    let responseText;
+    if (validity.isValid) responseText = JSON.stringify(true); //or just "true"
+    else {
+        if (validity.errorMessage) responseText = JSON.stringify(validity.errorMessage);
+        else responseText = JSON.stringify(false); //or just "false"
+    }
+    res.send(responseText);
+});
+```
 
 ### **`new Integer()` or `integer`** <a name="email"></a>
 Checks if the input value is integer or not. If the input value is a string (such as getting from `TextInput`) and you want
@@ -730,13 +876,17 @@ have higher [`priority`](#user-content-validationrule_property-priority) (defaul
 To limit the input value at maximum of `maxValue`. The data type of `maxValue` can be string, number or `Date`. If `maxValue`
 is number but the input value is string (such as getting from `TextInput`) then you must also specify
 [`numeric`](#user-content-numeric) rule for the input. The `numeric` rule must have higher
-[`priority`](#user-content-validationrule_property-priority) (default).
+[`priority`](#user-content-validationrule_property-priority) (default).  
+**Property:**  
+- `max` is the maximum value (the same as `maxValue` parameter of contructor)
 
 ### **`new Min(minValue)` or `min(minValue)`** <a name="min"></a>
 To limit the input value at minimum of `minValue`. The data type of `minValue` can be string, number or `Date`. If `minValue`
 is number but the input value is string (such as getting from `TextInput`) then you must also specify
 [`numeric`](#user-content-numeric) rule for the input. The `numeric` rule must have higher
-[`priority`](#user-content-validationrule_property-priority) (default).
+[`priority`](#user-content-validationrule_property-priority) (default).  
+**Property:**  
+- `min` is the minimum value (the same as `minValue` parameter of contructor)
 
 ### **`new Numeric()` or `numeric`** <a name="numeric"></a>
 To assess if the input value is numeric or not.
@@ -744,7 +894,7 @@ To assess if the input value is numeric or not.
 ### **`new Regex(pattern, flags)` or `regex(pattern, flags)`** <a name="regex"></a>
 To examine if `pattern` applies to the input value. `pattern` can be a `RegExp` object or a pattern string. If `pattern` is a
 string, `flags` parameter is the flags to add to the pattern (see
-[this doc](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/RegExp) for more information). 
+[this doc](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/RegExp) for more information).
 
 ### **`new Required()` or `required`** <a name="required"></a>
 It's to specify the input value cannot be empty. This rule is the highest priority, examined at the first time. If this rule is
@@ -767,12 +917,63 @@ invalid. The returned string is the error message (by this way, you may create d
 The `errorMessage` parameter is used as the error message if `predicate` function doesn't return a string (returns `false`).
 If you set [`messageFunc`](#user-content-validationrule_property-messagefunc) then the error message will be taken from
 `messageFunc`.
+#### **Example:** <a name="rule_example"></a>
+The example below is the validator to check whether the number is between 5 to 9. If not then the value is invalid. If the value is not
+a number then it return the error message "Not valid number". If the value less than 5 then the message is "The value is too small". If
+the value is higher than 9 then the message is "The value is too big".
+```javascript
+rule(
+    value => {
+        const numb = parseFloat(value);
+        if (isNaN(numb)) { //Needs more checking to ensure the `value` is really a number
+            return false;
+        }
+        else if (numb < 5) {
+            return 'The value is too small';
+        }
+        else if (numb > 9) {
+            return 'The value is too big';
+        }
+        return true;
+    },
+    'Not valid number'
+)
+```
+
+### **`new CustomRuleAsync(predicate, errorMessage)` or `ruleAsync(predicate, errorMessage)`** <a name="ruleasync"></a>
+It is almost the same as [`rule`](#user-content-rule) rule. The difference is it runs in asynchronous mode. The `predicate` function
+for this rule doesn't return anything. As a replacement, to set the validation status (valid/invalid or the error message), it has a
+second parameter which is a function. The validation status is set using this function.
+#### **Example:** <a name="ruleasync_example"></a>
+As an example, we change [the example for `rule`](#user-content-rule_example) to be an approprite one for `ruleAsync`.
+```javascript
+ruleAsync(
+    (value, resolve) => {
+        const numb = parseFloat(value);
+        if (isNaN(numb)) { //Needs more checking to ensure the `value` is really a number
+            resolve(false);
+        }
+        else if (numb < 5) {
+            resolve('The value is too small');
+        }
+        else if (numb > 9) {
+            resolve('The value is too big');
+        }
+        else {
+            resolve(true);
+        }
+    },
+    'Not valid number'
+)
+```
 
 ### **`new StrLength(minValue, maxValue)` or `strlen(minValue, maxValue)` or `strlenmax(maxValue)`** <a name="strlen"></a>
 After the input value is converted to string, this rule is to limit the length of the value string. The minimum length is
 specified by `minValue` parameter and the maximum length is specified by `maxValue` parameter. If `minValue` is undefined then
-the minimum length is 0. If `maxValue` is undefined then no limit for maximum length.
-
+the minimum length is 0. If `maxValue` is undefined then no limit for maximum length.  
+**Properties:**  
+- `max` is the maximum length (the same as `maxValue` parameter of contructor)
+- `min` is the minimum length (the same as `minValue` parameter of contructor)
 
 ## **Messages** <a name="messages"></a>
 
@@ -781,7 +982,13 @@ inspect them in the case that you want to translate them to the other languages.
 messages are listed in the following code:
 ```javascript
 {
+    asyncFail: 'cannot validate',
     email: 'invalid email address',
+    httpReq: {
+        disconnected: "Can't connect to server",
+        notOk: "Server failed to process data",
+        invalid: "Can't interpret server response",
+    },
     integer: 'must be the round number',
     invalid: 'invalid',
     max: 'maximum ${max}',

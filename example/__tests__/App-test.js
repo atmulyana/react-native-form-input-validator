@@ -5,6 +5,7 @@
 
 import 'react-native';
 import React from 'react';
+import './_includes/rn-mock';
 import './_includes/validator-mock';
 import App from '../App';
 

@@ -3,6 +3,7 @@
  * https://github.com/atmulyana/react-native-form-input-validator
  *
  * @format
+ * @flow strict-local
  */
 import * as React from 'react';
 import {
@@ -11,11 +12,15 @@ import {
     TextInput,
     View,
 } from 'react-native';
+//$FlowIgnore[untyped-import]
 import styles from './styles';
 import {
     ValidationContext,
     withValidation,
 } from "react-native-form-input-validator";
+import type {
+    ContextRef
+} from 'react-native-form-input-validator/lib/types';
 import {
     email,
     required,
@@ -27,8 +32,8 @@ let Input2 = withValidation(TextInput, {
     rules: [email, required]
 });
 
-export default () => {
-    const validation = React.useRef(null);
+export default (): React.Node => {
+    const validation = React.useRef<?ContextRef>(null);
     const [isAuto, setAuto] = React.useState(true);
     const [value1, setValue1] = React.useState('');
     const [value2, setValue2] = React.useState('');

@@ -26,7 +26,7 @@ const Form = () =>
             }} />
     </View>;
 
-test('render input withValidation', () => {
+test('render input `withValidation`', () => {
     let renderer;
     Renderer.act(() => {
         renderer = Renderer.create(<Form />);
@@ -66,4 +66,30 @@ test('render input withValidation', () => {
     expect(inputRef.isValid).toBe(true);
     expect(inputContainer.children[1]).toBeUndefined();
     expect(input.props.style.borderColor).toBe('gray');
+});
+
+test('`withValidation` should return the original Input if no rule defined', () => {
+    let Input = withValidation(TextInput); //`option` is not defined
+    expect(Input).toBe(TextInput);
+
+    Input = withValidation(TextInput, true); //`option` is not object (invalid)
+    expect(Input).toBe(TextInput);
+
+    Input = withValidation(TextInput, {}); //`option` object doesn't define any rule
+    expect(Input).toBe(TextInput);
+
+    Input = withValidation(TextInput, {rules: true}); //`option` object  defines invalid rules
+    expect(Input).toBe(TextInput);
+
+    Input = withValidation(TextInput, {rules: []}); //`option` object defines rules as empty array (no rule)
+    expect(Input).toBe(TextInput);
+
+    Input = withValidation(TextInput, {rules: [new Date()]}); //`option` object defines no valid rule in rules array
+    expect(Input).toBe(TextInput);
+
+    Input = withValidation(TextInput, []); //`option` as empty array (no rule)
+    expect(Input).toBe(TextInput);
+
+    Input = withValidation(TextInput, [new Date()]); //`option` as non-empty array but conatins no valid rule
+    expect(Input).toBe(TextInput);
 });

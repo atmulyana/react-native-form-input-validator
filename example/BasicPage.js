@@ -18,15 +18,17 @@ import {
     View,
 } from 'react-native';
 import type {Props as TextInputProps} from 'react-native/Libraries/Components/TextInput/TextInput';
-import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
-//$FlowIgnore[untyped-import]
+import type {
+    ColorValue,
+    TextStyleProp,
+    ViewStyleProp,
+} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import JsSimpleDateFormat from 'jssimpledateformat';
 //$FlowIgnore[untyped-import]
 import CheckBox from '@react-native-community/checkbox';
 import RNDatePicker from '@react-native-community/datetimepicker';
-//$FlowIgnore[untyped-import]
+import type {BaseProps as DateTimePickerProps, DateTimePickerEvent} from '@react-native-community/datetimepicker/src/types';
 import {Calendar as CalendarIcon} from 'react-native-feather';
-//$FlowIgnore[untyped-import]
 import {Picker} from '@react-native-picker/picker';
 //$FlowIgnore[untyped-import]
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
@@ -63,27 +65,29 @@ export default (): Node => {
         last: '',
     });
     const onNameChange = {
-        first: React.useCallback(first => setName({...name, first}), [name]),
-        middle: React.useCallback(middle => setName({...name, middle}), [name]),
-        last: React.useCallback(last => setName({...name, last}), [name]),
+        first: React.useCallback((first: string) => setName({...name, first}), [name]),
+        middle: React.useCallback((middle: string) => setName({...name, middle}), [name]),
+        last: React.useCallback((last: string) => setName({...name, last}), [name]),
     };
 
-    const [dateOfBirth, setDateOfBirth] = React.useState(addYear(new Date(), -20)); //set initial invalid value
-    const dobOnChange = React.useCallback((_, date) => setDateOfBirth(date), []);
-    const [gender, setGender] = React.useState(null);
+    const [dateOfBirth, setDateOfBirth] = React.useState<?Date>(addYear(new Date(), -20)); //set initial invalid value
+    const dobOnChange = React.useCallback((_: mixed, date?: Date) => setDateOfBirth(date), []);
+    const [gender, setGender] = React.useState<mixed>(null);
     const [childCount, setChildCount] = React.useState('');
     const [domicile, setDomicile] = React.useState('');
     const [transport, setTransport] = React.useState('');
     const [confirm, setConfirm] = React.useState(false);
-    const confirmOnChange = React.useCallback(confirm => setConfirm(!!confirm), []);
+    const confirmOnChange = React.useCallback((confirm: boolean) => setConfirm(!!confirm), []);
 
     /**
-     * It's how we define the input that needs a state value for validation rule in a function component.
-     * `TransportInput` is saved in a state in order for its reference never changes in every render. So, its state can be maintained.
-     * The easier way is if you use the a class component for the form. Because `TransportInput` can become a property of the class
-     * and also the state is the property of the class component. See `ComparePage.js` for example.
-     */
-    const [validators] = React.useState({});
+     * Before version 1.2, the snippet of code in this comment is how we define the input that needs a `state` value for validation rule
+     * in a function component. `TransportInput` is saved in a `state` or `ref` (using `useRef`) in order for its reference never changes
+     * in every render. So, some initializations in `withValidation` need not be re-executed repeatedly. But as of version 1.2, it's
+     * handled internally.
+     * NOTE: Only `rules` can depend on a `state` value whereas the other option members will use the initial value (cannot change in
+     * every render)
+    
+    const [validators] = React.useState<{[string]: mixed => boolean}>({});
     validators.validateTransport = value => {
         if (value == 'foot') {
             return domicile == 'center' || domicile === '';
@@ -103,6 +107,28 @@ export default (): Node => {
             ],
         })
     );
+
+     * Although it's not a problem anymore, you should invoke `withValidation` in the place that it will be invoked once if possible
+     * (in a function component it will be invoked in every render).
+     * If this case happens in a class component, you may follow the example in`ComparePage.js`.
+     */
+
+    const TransportInput = withValidation(Picker, {
+        name: 'Transportation',
+        getValue: props => props.selectedValue,
+        rules: [
+            rule(
+                value => {
+                    if (value == 'foot') {
+                        return domicile == 'center' || domicile === '';
+                    }
+                    return true;
+                },
+                "It's impossible to go to the office on foot based the selected domicile"
+            ),
+            required,
+        ],
+    });
     
     return <ValidationContext ref={validation}>
         <Text style={[styles.text, {fontSize: 16, fontWeight: 'bold', lineHeight: 20, marginBottom: 10, textAlign: 'center'}]}>Emplyee Data Form</Text>
@@ -180,7 +206,7 @@ export default (): Node => {
                 </View>
                 <Validation
                     rules={rule(
-                        checked => checked,
+                        checked => !!checked,
                         'You must check this statement'
                     )}
                     value={confirm}
@@ -197,7 +223,6 @@ export default (): Node => {
         </View>
     </ValidationContext>;
 };
-
 
 const RequiredNameInput = withValidation(TextInput, {
     rules: [
@@ -258,7 +283,11 @@ class NamePart extends React.PureComponent<{
     }
 }
 
-const Calendar: (props: {display: string, onChange?: (mixed, ?Date) => void, style: ViewStyleProp, value: Date}) => Node = Platform.OS == 'android'
+const dtSimlatePressEvent: DateTimePickerEvent = {
+    type: "neutralButtonPressed",
+    nativeEvent: {},
+}
+const Calendar: (props: DateTimePickerProps) => Node = Platform.OS == 'android'
     //$FlowIgnore[incompatible-exact]
     //$FlowIgnore[prop-missing] Incomplete declaration in RNDatePicker
     ? props => <RNDatePicker display="calendar" {...props} />
@@ -268,7 +297,7 @@ const Calendar: (props: {display: string, onChange?: (mixed, ?Date) => void, sty
         return <Modal transparent={true}>
             <View style={[StyleSheet.absoluteFill, {alignItems: 'center', justifyContent: 'center'}]}>
                 <TouchableOpacity
-                    onPress={() => props.onChange && props.onChange(null, props.value)}
+                    onPress={() => props.onChange && props.onChange(dtSimlatePressEvent, props.value)}
                     style={[StyleSheet.absoluteFill, {backgroundColor: 'black', opacity: 0.5}]}
                 />
                 {/** $FlowIgnore[prop-missing] Incomplete declaration in RNDatePicker */}
@@ -288,11 +317,11 @@ const Calendar: (props: {display: string, onChange?: (mixed, ?Date) => void, sty
                 />
                 <View style={{flexDirection: 'row', justifyContent:'flex-end', width:350}}>
                     <Text
-                        onPress={() => props.onChange && props.onChange(null, props.value)}
+                        onPress={() => props.onChange && props.onChange(dtSimlatePressEvent, props.value)}
                         style={{backgroundColor: 'white', color:'#307df6', fontWeight:'bold', paddingHorizontal:10, paddingVertical:2}}
                     >CANCEL</Text>
                     <Text
-                        onPress={() => props.onChange && props.onChange(null, value)}
+                        onPress={() => props.onChange && props.onChange(dtSimlatePressEvent, value)}
                         style={{backgroundColor: 'white', color:'#307df6', fontWeight:'bold', paddingHorizontal:10, paddingVertical:2}}
                     >OK</Text>
                 </View>
@@ -301,7 +330,8 @@ const Calendar: (props: {display: string, onChange?: (mixed, ?Date) => void, sty
     };
 
 const dateFormatter = new JsSimpleDateFormat("MMMM d, yyyy");
-const DatePicker = React.memo(function({onChange, style, value = new Date(), ...props}): Node {
+const DatePicker = React.memo(function({onChange, style, value, ...props}: {...DateTimePickerProps, value?: Date | null}): Node {
+    const dtValue = value ?? new Date();
     const iconSize = 16;
     const [iconStyle, setIconStyle] = React.useState({
         alignItems: 'center',
@@ -317,10 +347,12 @@ const DatePicker = React.memo(function({onChange, style, value = new Date(), ...
         width: styles.textInputHeight.height - 2,
     });
     const [calendarVisible, setCalendarVisible] = React.useState(false);
-    const onChangeHandler = React.useCallback((event, date) => {
+    const onChangeHandler = React.useCallback((event: DateTimePickerEvent, date?: Date) => {
         setCalendarVisible(false);
-        let dateWithoutTime = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-        onChange(event, dateWithoutTime);
+        if (onChange) {
+            let dateWithoutTime = date ? new Date(date.getFullYear(), date.getMonth(), date.getDate()) : undefined;
+            onChange(event, dateWithoutTime);
+        }
     }, [onChange])
     const showCalendar = React.useCallback(() => setCalendarVisible(true), []);
 
@@ -333,12 +365,12 @@ const DatePicker = React.memo(function({onChange, style, value = new Date(), ...
                     setIconStyle(style => ({...style, display: 'flex', left: layout.x + 1, top: layout.y + 1}));
                 }}
             >
-                {dateFormatter.format(value)}
+                {dateFormatter.format(dtValue)}
             </Text>
             <TouchableOpacity style={iconStyle} onPress={showCalendar}>
                 <CalendarIcon height={iconSize} stroke="black" width={iconSize} />
             </TouchableOpacity>
-            {calendarVisible && <Calendar onChange={onChangeHandler} value={value} {...props} />}
+            {calendarVisible && <Calendar onChange={onChangeHandler} value={dtValue} {...props} />}
         </>
     );
 });
@@ -359,14 +391,21 @@ const DateOfBirthInput = withValidation(DatePicker, {
 
 
 const RadioButtons: React.AbstractComponent<{
-    inputProps: {},
-    labelProps: {},
+    inputProps?: {
+        buttonInnerColor?: ColorValue,
+        buttonOuterColor?: ColorValue,
+        ...
+    },
+    labelProps?: {
+        labelStyle?: TextStyleProp,
+        ...
+    },
     options: Array<{value: mixed, label: string}>,
     value?: mixed,
     onPress?: mixed => mixed,
     style?: mixed,
     ...
-}> = React.memo(({inputProps, labelProps, options, value, onPress, style}): Node =>
+}> = React.memo(({inputProps = {}, labelProps = {}, options, value, onPress, style}): Node =>
     <RadioForm
         formHorizontal={true}
         animation={true}
@@ -375,27 +414,27 @@ const RadioButtons: React.AbstractComponent<{
         {options.map((obj, i) => (
             <RadioButton labelHorizontal={true} key={i} style={{marginBottom: 0}}>
                 <RadioButtonInput
+                    {...inputProps}
                     obj={obj}
                     index={i}
                     isSelected={value === obj.value}
                     onPress={() => onPress && onPress(obj.value)}
                     borderWidth={1}
-                    buttonInnerColor='black'
-                    buttonOuterColor='black'
+                    buttonInnerColor={inputProps?.buttonInnerColor ?? 'black'}
+                    buttonOuterColor={inputProps?.buttonOuterColor ?? 'black'}
                     buttonSize={styles.text.fontSize - 3}
                     buttonOuterSize={styles.text.fontSize}
                     // buttonStyle={{}}
                     buttonWrapStyle={{marginLeft: 10}}
-                    {...inputProps}
                 />
                 <RadioButtonLabel
+                    {...labelProps}
                     obj={obj}
                     index={i}
                     labelHorizontal={true}
                     onPress={() => onPress && onPress(obj.value)}
-                    labelStyle={styles.textSlim}
+                    labelStyle={labelProps?.labelStyle ?? styles.textSlim}
                     // labelWrapStyle={{}}
-                    {...labelProps}
                 />
             </RadioButton>
         ))}  
@@ -405,15 +444,19 @@ const RequiredOptions = withValidation(RadioButtons, {
     rules: required,
     setStatusStyle: (props, style) => {
         if (style) {
-            //$FlowIgnore[unclear-type]
-            const styleObj: any = StyleSheet.flatten(style);
-            props.inputProps = {
-                buttonInnerColor: styleObj.color,
-                buttonOuterColor: styleObj.borderColor,
-            };
-            props.labelProps = {
-                labelStyle: [styles.textSlim, {color: styleObj.color}]
-            };
+            //$FlowIgnore[underconstrained-implicit-instantiation]
+            const styleObj: {color: ColorValue, borderColor: ColorValue, ...} | void | null | '' | false = StyleSheet.flatten(style);
+            if (styleObj) {
+                props.inputProps = {
+                    ...props.inputProps,
+                    buttonInnerColor: styleObj.color,
+                    buttonOuterColor: styleObj.borderColor,
+                };
+                props.labelProps = {
+                    ...props.labelProps,
+                    labelStyle: [styles.textSlim, {color: styleObj.color}],
+                };
+            }
         }
         else {
             delete props.inputProps;
@@ -423,7 +466,7 @@ const RequiredOptions = withValidation(RadioButtons, {
 });
 
 
-function ChildsInput({style, ...props}: {style: ViewStyleProp}) {
+function ChildsInput({style, ...props}: {...TextInputProps, style: ViewStyleProp}) {
     const red = '#dc3545';
     const inputStyle: {flex: 0, width: 40, color?: string, borderColor?: string} = {flex: 0, width: 40};
     if (Array.isArray(style)) { //invalid status

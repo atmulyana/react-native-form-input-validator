@@ -2,9 +2,6 @@
 ; We fork some components by platform
 .*/*[.]android.js
 
-; Ignore "BUCK" generated dirs
-<PROJECT_ROOT>/\.buckd/
-
 ; Ignore polyfills
 node_modules/react-native/Libraries/polyfills/.*
 
@@ -14,13 +11,13 @@ node_modules/react-native/Libraries/polyfills/.*
 .*/node_modules/resolve/test/resolver/malformed_package_json/package\.json$
 
 [untyped]
-.*/node_modules/@react-native-community/cli/.*/.*
+;.*/node_modules/@react-native-community/cli/.*/.*
 
 [include]
 
 [libs]
 node_modules/react-native/interface.js
-node_modules/react-native/flow/
+;node_modules/react-native/flow/
 
 [options]
 emoji=true
@@ -32,6 +29,8 @@ format.bracket_spacing=false
 module.file_ext=.js
 module.file_ext=.json
 module.file_ext=.ios.js
+
+module.system.node.resolve_dirname=node_modules
 
 munge_underscores=true
 
@@ -63,4 +62,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.190.0
+^0.212.0

@@ -1,28 +1,23 @@
+const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
+
 /**
- * Metro configuration for React Native
- * https://github.com/facebook/react-native
+ * Metro configuration
+ * https://facebook.github.io/metro/docs/configuration
  *
- * @format
+ * @type {import('metro-config').MetroConfig}
  */
 const path = require('path');
 const packagePath = path.resolve(__dirname + '/../lib');
-
-module.exports = {
-  transformer: {
-    getTransformOptions: async () => ({
-      transform: {
-        experimentalImportSupport: false,
-        inlineRequires: true,
-      },
-    }),
-  },
-  resolver: {
-    extraNodeModules: new Proxy({}, {
-      get: (_, moduleName) =>
-        moduleName == 'react-native-form-input-validator' 
-          ? packagePath
-          : path.join(__dirname, `node_modules/${moduleName}`)
-    }),
-  },
-  watchFolders: [packagePath],
+const config = {
+    resolver: {
+        extraNodeModules: new Proxy({}, {
+            get: (_, moduleName) =>
+            moduleName == 'react-native-form-input-validator' 
+                ? packagePath
+                : path.join(__dirname, `node_modules/${moduleName}`)
+        }),
+    },
+    watchFolders: [packagePath],
 };
+
+module.exports = mergeConfig(getDefaultConfig(__dirname), config);

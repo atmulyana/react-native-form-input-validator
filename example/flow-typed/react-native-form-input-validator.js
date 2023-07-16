@@ -4,57 +4,168 @@
  * @format
  * @flow
  */
-//$FlowIgnore[toplevel-library-import]
-import * as React from 'react'
-//$FlowIgnore[toplevel-library-import]
-import type {
-    ComparableType,
-    ContextProps,
-    ContextRef,
-    MessageFunction,
-    RefProp,
-    StrLengthType,
-    StyleProp,
-    ValidateFunction,
-    ValidationOption,
-    ValidationProps,
-    InputRef,
-} from '../../lib/types';
-//$FlowIgnore[toplevel-library-import]
-import {Rule} from '../../lib/types';
 
-declare module "react-native-form-input-validator" {
-    declare export var ValidationContext: React.AbstractComponent<ContextProps, ContextRef>;
+declare type _LangFunction = string => string;
+declare type _MessageFunction<T> = ?(Rule<T> => ?string);
 
-    declare export class Validation extends React.Component<ValidationProps> {
-        constructor(props: ValidationProps): void;
-        get isValid(): boolean;
-        validate(): boolean;
-        clearValidation(): void;
-    }
-
-    declare export function isDifferentStyle(style1: StyleProp, style2: StyleProp): boolean;
-    declare export function setStatusStyleDefault(props: {...}, style: StyleProp): React.Node;
-    declare export function withValidation<Props: {...}, Instance>(
-        Input: React.AbstractComponent<Props, Instance>,
-        option: ValidationOption<Props> | Array<Rule<mixed>> | Rule<mixed>
-    ): React.AbstractComponent<Props, Instance & InputRef>;
+declare class Rule<T> {
+    lang: _LangFunction;
+    name: ?string;
+    +messageFunc: _MessageFunction<T>;
+    +value: T;
+    +resultValue: any;
+    +isValid: boolean;
+    +priority: number;
+    +errorMessage: ?string;
+    setMessageFunc(func: _MessageFunction<T>): Rule<T>;
+    setName(name: string): Rule<T>;
+    setPriority(priority: number): Rule<T>;
+    setValue(value: T): Rule<T>;
+    validate(): any; //Rule<T> | Promise<Rule<T>>;
 }
 
-declare module "react-native-form-input-validator/rules" {
-    declare export default class ValidationRule<T> extends Rule<T> {
-        constructor(): void;
-        get priority(): number;
-        get errorMessage(): ?string;
-        get messageFunc(): MessageFunction<T>;
-        get value(): T;
-        get resultValue(): mixed;
+
+declare module "react-native-form-input-validator/lib/types" {
+    import type {Node} from 'react';
+
+    declare export type ComparableType = number | string | /*bigint |*/ Date; //bigint not supported yet
+    declare export type LangFunction = _LangFunction;
+    declare export type MessageFunction<T> = _MessageFunction<T>;
+    declare export type StrLengthType = string | number;
+    declare export type ValidateFunction<T> = T => boolean | string;
+    declare export type ValidateFunctionAsync<T> = (value: T, reject: (boolean | string) => void) => void;
     
-        setMessageFunc(func: MessageFunction<T>): Rule<T>;
-        setName(name: string): Rule<T>;
-        setValue(value: T): Rule<T>;
-        setPriority(priority: number): Rule<T>;
+    declare type RecursiveArray<+T> =
+        | null
+        | void
+        | T
+        | false
+        | ''
+        | $ReadOnlyArray<RecursiveArray<T>>;
+    declare export type StyleProp = RecursiveArray<$ReadOnly<{...}>>;
+
+    declare export interface Ref {
+        clearValidation(): void,
+        validate(): boolean,
+        validateAsync(): Promise<boolean>,
+    }
+
+    declare export interface ContextRef extends Ref {
+        refreshMessage(): void,
+    }
+
+    declare export interface InputRef extends Ref {
+        focus?: () => mixed,
+        +isValid: boolean,
+        setErrorMessage(string): void,
+    }
+
+    declare export type RefObject<T> = {current: T | null, ...};
+    declare export type RefProp<T> = ((T | null) => mixed) | RefObject<T>;
+
+    declare type TAsyncFailMessage = {
+        Default: 0,
+        CaughtError: 1,
+    };
+    declare export const AsyncFailMessage: TAsyncFailMessage;
+
+    declare export type ContextValue = {|
+        asyncFailMessage: $Values<typeof AsyncFailMessage>,
+        auto: boolean,
+        errorTextStyle: StyleProp,
+        inputErrorStyle: StyleProp,
+        lang?: LangFunction,
+        addRef: InputRef => mixed,
+        removeRef: InputRef => mixed;
+    |};
+
+    declare export type ContextDefaultProps = {
+        asyncFailMessage: ContextValue['asyncFailMessage'],
+        auto: ContextValue['auto'],
+        errorTextStyle: ContextValue['errorTextStyle'],
+        focusOnInvalid: boolean,
+        inputErrorStyle: ContextValue['inputErrorStyle'],
+        lang: $NonMaybeType<ContextValue['lang']>,
+    };
+
+    declare export type ContextProps = {
+        ...ContextDefaultProps,
+        children: Node,
+    };
+
+    declare export type ValidationOption<Props, Value = mixed> = {
+        asyncFailMessage?: ContextValue['asyncFailMessage'],
+        auto?: boolean,
+        errorTextStyle?: StyleProp,
+        getStyle?: Props => StyleProp,
+        getValue?: Props => Value,
+        inputErrorStyle?: StyleProp,
+        lang?: LangFunction,
+        name?: string,
+        rules: Array<Rule<Value>> | Rule<Value>,
+        setStatusStyle?: (Props, StyleProp, context: {clearValidation: () => void, flag: mixed}) => Node,
+        setStyle?: (Props, StyleProp, containerStyle?: StyleProp) => mixed,
+    };
+
+    declare export type ValidationProps = {
+        auto?: boolean,
+        errorTextStyle?: StyleProp,
+        lang?: LangFunction,
+        rules: Array<Rule<mixed>> | Rule<mixed>,
+        style?: StyleProp,
+        value: mixed,
+    };
+
+    declare export type HttpReqOption = {
+        data?: URLSearchParams | {[string]: mixed},
+        headers?: {[string]: string},
+        silentOnFailure?: boolean,
+        timeout?: number,
+        withCredentials?: boolean,
+    };
+}
+
+
+declare module "react-native-form-input-validator" {
+    import type {AbstractComponent, Component, Config, Node} from 'react';
+    import type {
+        ContextDefaultProps,
+        ContextProps,
+        ContextRef,
+        InputRef,
+        StyleProp,
+        ValidationOption,
+        ValidationProps,
+    } from 'react-native-form-input-validator/lib/types';
+
+    declare export var ValidationContext: AbstractComponent<Config<ContextProps, ContextDefaultProps>, ContextRef>;
+    declare export var Validation: AbstractComponent<ValidationProps, InputRef>;
+
+    declare export function isDifferentStyle(style1: StyleProp, style2: StyleProp): boolean;
+    declare export function setStatusStyleDefault(props: {...}, style: StyleProp): Node;
+    declare export function withValidation<Props, Instance = mixed>(
+        Input: AbstractComponent<Props, Instance>,
+        option: ValidationOption<Props, any> | Array<Rule<any>> | Rule<any>
+    ): AbstractComponent<Props, Instance & InputRef>;
+}
+
+
+declare module "react-native-form-input-validator/rules" {
+    import type {
+        ComparableType,
+        HttpReqOption,
+        MessageFunction,
+        StrLengthType,
+        ValidateFunction,
+        ValidateFunctionAsync,
+    } from 'react-native-form-input-validator/lib/types';
+
+    declare export default class ValidationRule<T> extends Rule<T> {
         validate(): Rule<T>;
+    }
+
+    declare export class ValidationRuleAsync<T> extends Rule<T> {
+        validate(): Promise<Rule<T>>;
     }
     
     declare export class CustomRule extends ValidationRule<mixed> {
@@ -62,8 +173,19 @@ declare module "react-native-form-input-validator/rules" {
     }
     declare export function rule(validateFunc: ValidateFunction<mixed>, errorMessage?: string): Rule<mixed>;
     
+    declare export class CustomRuleAsync extends ValidationRuleAsync<mixed> {
+        constructor(validateFunc: ValidateFunctionAsync<mixed>, errorMessage?: string): void;
+    }
+    declare export function ruleAsync(
+        validateFunc: ValidateFunctionAsync<mixed>, errorMessage?: string): Rule<mixed>;
+    
     declare export class Email extends ValidationRule<string> {}
     declare export var email: Rule<string>;
+
+    declare export class HttpReq extends ValidationRuleAsync<?ComparableType | boolean> {
+        constructor(uri: string, option?: HttpReqOption): void;
+    }
+    declare export function httpReq(uri: string, option?: HttpReqOption): HttpReq;
     
     declare export class Integer extends ValidationRule<mixed>{}
     declare export var integer: Rule<mixed>;
@@ -88,15 +210,16 @@ declare module "react-native-form-input-validator/rules" {
     }
     declare export function regex(pattern: RegExp | string, flags?: string): Rule<string>;
     
-    declare export class Required extends ValidationRule<mixed> {
+    declare class _Required extends ValidationRule<mixed> {
         constructor(_if?: mixed => boolean): void;
-        static If(_if: mixed => boolean): Required;
+        static If(_if: mixed => boolean): _Required;
     }
-    declare class RequiredIf extends Required {
-        if: (mixed => boolean) => Required;
+    declare class RequiredIf extends _Required {
+        if: (mixed => boolean) => _Required;
     }
+    declare export {_Required as Required};
     declare export var required: RequiredIf;
-    declare export var alwaysValid: Required;
+    declare export var alwaysValid: _Required;
     
     declare export class StrLength extends ValidationRule<StrLengthType> {
         constructor(min?: number, max?: number): void;
@@ -105,21 +228,4 @@ declare module "react-native-form-input-validator/rules" {
     }
     declare export function strlen(min: number, max?: number): Rule<StrLengthType>;
     declare export function strlenmax(max: number): Rule<StrLengthType>;
-}
-
-declare module "react-native-form-input-validator/lib/types" {
-    declare export interface Ref {
-        clearValidation(): void,
-        validate(): boolean,
-    }
-    
-    declare export interface ContextRef extends Ref {
-        refreshMessage(): void,
-    }
-    
-    declare export interface InputRef extends Ref {
-        focus?: () => mixed,
-        index: number,
-        +isValid: boolean,
-    }
 }

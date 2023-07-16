@@ -22,3 +22,9 @@ test('validation: custom rule validates to false with message', () => {
     expect(val.isValid).toBe(false);
     expect(val.errorMessage).toBe('abc');
 });
+
+test('validation: custom rule validates to false with message from predicate', () => {
+    const val = rule(() => 'error', 'abc').validate();
+    expect(val.isValid).toBe(false);
+    expect(val.errorMessage).toBe('error');
+});
