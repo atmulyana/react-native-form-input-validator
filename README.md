@@ -165,6 +165,7 @@ for this element are:
 </tr>
 </table>
 
+<a name="validationcontext_members"></a>
 #### **Methods and property of `ValidationContext` reference (the object that we get from `ref` property):**
 - `clearValidation` <a name="validationcontext_method-clearvalidation"></a>   
   It executes [`clearValidation`](#user-content-withvalidation_method-clearvalidation) method of all contained inputs to clear the
@@ -175,12 +176,12 @@ for this element are:
   [`validate`](#user-content-validationcontext_method-validate) or
   [`validateAsync`](#user-content-validationcontext_method-validateasync).
 
-- `getErrorMessage(name)`<a name="validationcontext_method-getErrorMessage"></a>  
+- `getErrorMessage(name)`<a name="validationcontext_method-geterrormessage"></a>  
   returns the error message that is being displayed for the input whose the [name](#user-content-withvalidation-name) specified by
   `name` parameter and inside the current `ValidationContext`. It returns an empty string if no error message displayed for that input.
   It returns `undefined` if no input whose such `name`.
 
-- `getInput(name)`<a name="validationcontext_method-getInput"></a>  
+- `getInput(name)`<a name="validationcontext_method-getinput"></a>  
   returns the reference of the input whose the [name](#user-content-withvalidation-name) specified by `name` parameter and inside the
   current `ValidationContext`. It returns `undefined` if no input whose such `name`.
 
@@ -189,7 +190,7 @@ for this element are:
   all contained inputs so that their error messages are refreshed. Because of that, if the input is already valid then the error
   message will be gone.
 
-- `setErrorMessage(name, message)`<a name="validationcontext_method-setErrorMessage"></a>   
+- `setErrorMessage(name, message)`<a name="validationcontext_method-seterrormessage"></a>   
   This method is to set error message for an input whose the [name](#user-content-withvalidation-name) specified by `name` parameter.
   `message` parameter is the error message to show. The input must be inside the current `ValidationContext`. This method is useful
   when dealing with [server-side validation](#user-content-server-side_validation).
@@ -221,7 +222,7 @@ discuss the option properties more detailedly. The only property you must specif
     <th>Default value</th>
 </tr>
 <tr>
-    <td valign="top"><code>asyncFailMessage</code><a name="withvalidation-asyncFailMessage"></a></td>
+    <td valign="top"><code>asyncFailMessage</code><a name="withvalidation-asyncfailmessage"></a></td>
     <td valign="top">
         enum: <code>AsyncFailMessage {</code><br/>
         <code>Default,</code><br/>
@@ -318,7 +319,9 @@ function PercentageInput({
     <td valign="top"><code>string</code></td>
     <td valign="top">The name for the input. It's useful if you want to show the name in the error message. Read
         <a href="#user-content-messages">Messages</a> section and <a href="#user-content-function-str"><code>str</code></a> for more
-        information. <!--There will be an error if there is another input whose the same name inside the same
+        information. It's also used by some <a href="#user-content-validationcontext_members">methods</a> of
+        <code>ValidationContext</code>.
+        <!--There will be an error if there is another input whose the same name inside the same
         <a href="#user-content-validationcontext"><code>ValidationContext</code></a>.-->
     </td>
     <td valign="top">None (optional)</td>
@@ -411,9 +414,10 @@ function PercentageInput({
   option.
 
 - `setErrorMessage(message)` <a name="withvalidation_method-seterrormessage"></a>  
-  This method can set the error message for the input without calling [`validate`](#user-content-withvalidation_method-validate). It
-  won't validate any [rule](#user-content-withvalidation-rules) that has been applied to the input. By calling this method, the input
-  status becomes invalid ([`isValid`](#user-content-withvalidation_property-isvalid) property is `false`).
+  This method can set the error message for the input without calling [`validate`](#user-content-withvalidation_method-validate) or
+  [`validateAsync`](#user-content-withvalidation_method-validateasync). It won't validate any [rule](#user-content-withvalidation-rules)
+  that has been applied to the input. By calling this method, the input status becomes invalid
+  ([`isValid`](#user-content-withvalidation_property-isvalid) property is `false`).
 
   For example, we need to validate the input on the server because we must read the database to make sure the inputed user name is
   unique. (NOTE: The example below should be solved using [asynchronous validation](#user-content-asynchronous_validation) interfaces).
@@ -643,7 +647,7 @@ people always have different preference and there may be a situation it's needed
 Now, if we agree that the server-side validation is needed then how to notify user if there are one or more invalid inputs. You may use
 an alert dialog or a Toast popup. But, it may be better if we show each error message below the corresponding input with hightlighting
 style like this package does in client-side validation. It's possible by the favor of
-[`setErrorMessage`](#user-content-validationcontext_method-setErrorMessage) method. Follow the example below. In the example, if there
+[`setErrorMessage`](#user-content-validationcontext_method-seterrormessage) method. Follow the example below. In the example, if there
 are one or more invalid inputs, the server returns status code 400 (Bad Request) and the response body is a JSON data key-ed by the
 invalid input [name](#user-content-withvalidation-name)s. The value of each key is the error message for that input.
 ```javascript
