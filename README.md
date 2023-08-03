@@ -165,19 +165,38 @@ for this element are:
 </tr>
 </table>
 
-#### **Methods of `ValidationContext` reference (the object that we get from `ref` property):**
+#### **Methods and property of `ValidationContext` reference (the object that we get from `ref` property):**
 - `clearValidation` <a name="validationcontext_method-clearvalidation"></a>   
-  It executes [`clearValidation`](#user-content-withvalidation_method-clearvalidation) method of all contained inputs to clear the validation
-  status of all contained inputs.
+  It executes [`clearValidation`](#user-content-withvalidation_method-clearvalidation) method of all contained inputs to clear the
+  validation status of all contained inputs.
+
+- `isValid` is the property to check the validity status of all inputs inside the context. If there is an invalid input, this property
+  will have `false` value. Otherwise it's `true`. The value of this property is trusted after calling
+  [`validate`](#user-content-validationcontext_method-validate) or
+  [`validateAsync`](#user-content-validationcontext_method-validateasync).
+
+- `getErrorMessage(name)`<a name="validationcontext_method-getErrorMessage"></a>  
+  returns the error message that is being displayed for the input whose the [name](#user-content-withvalidation-name) specified by
+  `name` parameter and inside the current `ValidationContext`. It returns an empty string if no error message displayed for that input.
+  It returns `undefined` if no input whose such `name`.
+
+- `getInput(name)`<a name="validationcontext_method-getInput"></a>  
+  returns the reference of the input whose the [name](#user-content-withvalidation-name) specified by `name` parameter and inside the
+  current `ValidationContext`. It returns `undefined` if no input whose such `name`.
 
 - `refreshMessage`   
   For a multi languange app, this method is useful to update the language of the error messages. This methods will re-validate
   all contained inputs so that their error messages are refreshed. Because of that, if the input is already valid then the error
   message will be gone.
 
+- `setErrorMessage(name, message)`<a name="validationcontext_method-setErrorMessage"></a>   
+  This method is to set error message for an input whose the [name](#user-content-withvalidation-name) specified by `name` parameter.
+  `message` parameter is the error message to show. The input must be inside the current `ValidationContext`. This method is useful
+  when dealing with [server-side validation](#user-content-server-side_validation).
+
 - `validate` <a name="validationcontext_method-validate"></a>   
-  It executes [`validate`](#user-content-withvalidation_method-validate) method of all contained inputs to validate all contained inputs. This
-  method returns `false` if any invalid input and returns `true` otherwise.
+  It executes [`validate`](#user-content-withvalidation_method-validate) method of all contained inputs to validate all contained
+  inputs. This method returns `false` if any invalid input and returns `true` otherwise.
 
 - `validateAsync` <a name="validationcontext_method-validateasync"></a>   
   It executes [`validateAsync`](#user-content-withvalidation_method-validateasync) method of all contained inputs to validate all
@@ -299,7 +318,8 @@ function PercentageInput({
     <td valign="top"><code>string</code></td>
     <td valign="top">The name for the input. It's useful if you want to show the name in the error message. Read
         <a href="#user-content-messages">Messages</a> section and <a href="#user-content-function-str"><code>str</code></a> for more
-        information.
+        information. <!--There will be an error if there is another input whose the same name inside the same
+        <a href="#user-content-validationcontext"><code>ValidationContext</code></a>.-->
     </td>
     <td valign="top">None (optional)</td>
 </tr>
@@ -371,20 +391,29 @@ function PercentageInput({
 </tr>
 </table>
 
-#### **Methods and property of the input reference (the object that we get from `ref` property):** <a name="withvalidation_methods_property"></a>
+#### **Methods and properties of the input reference (the object that we get from `ref` property):** <a name="withvalidation_methods_property"></a>
 - `clearValidation` <a name="withvalidation_method-clearvalidation"></a>   
   It's to clear validation status. The error message will disappear and the input style is reverted to normal. After executing this
   method, [`isValid`](#user-content-withvalidation_property-isvalid) will be reset to `true` even if the input is invalid. If
   [`auto`](#user-content-withvalidation-auto) validation is disabled, this method will be called when the user changes the input value
   right after the validation.
 
+- `getErrorMessage` <a name="withvalidation_method-getErrorMessage"></a>   
+  This method returns the error message being displayed for the input. It returns an empty string if no error.
+
 - `isValid` <a name="withvalidation_property-isvalid"></a>  
-  It shows the validation status of input. It's `true` if valid and `false` if invalid. The value of this property is trusted after
-  calling [`validate`](#user-content-withvalidation_method-validate).
+  It shows the validity status of input. It's `true` if valid and `false` if invalid. The value of this property is trusted after
+  calling [`validate`](#user-content-withvalidation_method-validate) or
+  [`validateAsync`](#user-content-withvalidation_method-validateasync).
+
+- `name` <a name="withvalidation_property-name"></a>  
+  It's the name of input. The value of this property is the same as that specified for [`name`](#user-content-withvalidation-name)
+  option.
 
 - `setErrorMessage(message)` <a name="withvalidation_method-seterrormessage"></a>  
   This method can set the error message for the input without calling [`validate`](#user-content-withvalidation_method-validate). It
-  won't validate any [rule](#user-content-withvalidation-rules) that has been applied to the input. 
+  won't validate any [rule](#user-content-withvalidation-rules) that has been applied to the input. By calling this method, the input
+  status becomes invalid ([`isValid`](#user-content-withvalidation_property-isvalid) property is `false`).
 
   For example, we need to validate the input on the server because we must read the database to make sure the inputed user name is
   unique. (NOTE: The example below should be solved using [asynchronous validation](#user-content-asynchronous_validation) interfaces).
@@ -416,6 +445,20 @@ function PercentageInput({
   <UserNameInput ref={userNameInput} onBlur={validateAsync} onChangeText={setUserName} value={userName} />
   ```
 
+  Another example, when the validation process yields an error:
+  ```javascript
+  <UserNameInput ref={userNameInput} onChangeText={setUserName} value={userName}
+     onBlur={() => {
+        try {
+            userNameInput.current.validate();
+        }
+        catch {
+            userNameInput.current.setErrorMessage('An error happens when validating');
+        }
+     }}
+  />
+  ``` 
+
   Need to remember that [`rules`](#user-content-withvalidation-rules) option is required. If you want to use `setErrorMessage`
   method but doesn't need to apply any validation rule, you can use [`alwaysValid`](#user-content-alwaysvalid) rule.
 
@@ -443,7 +486,7 @@ method/property of original input, follow the example below:
         inputRef.current.validate();
         
         //This statement will invoke `validate` method of original input
-        Object.getPrototypeOf(inputRef.current).validate();
+        inputRef.current.__proto__.validate();
     }} ... />
 
 
@@ -582,6 +625,100 @@ or
     let isValid = await inputRef.validateAsync();
 
 The last statement must be inside an `async` function.
+
+
+## **Server-side Validation** <a name="server-side_validation"></a>
+
+`react-native-form-input-validator` pakcage is to validate inputs in React Native app. In other words, it's for client-side validation.
+By existence of client-side validation, we are more confident to submit data to the server. However, is it enough? Absolutely not.
+A hacker can make a request without using our app and use an invalid data. So, the server-side validation is always needed exactly
+as if we are not using a rich user interface application (like an oldish web app).
+
+Then, you may think that if we use a rule like [`httReq`](#user-content-httpreq) then the server-side validation has been done because
+the validation by this rule is examined on the server. Unfortunately, it's not. We must validate the inputs right before they are
+used by the corresponding business process. Clearly, the URI used by `httpReq` is different from that to where the data is submitted.
+Knowing this fact, you may think that a rule like `httReq` is not needed because there will be more round-trip. Yes, you are true but
+people always have different preference and there may be a situation it's needed.
+
+Now, if we agree that the server-side validation is needed then how to notify user if there are one or more invalid inputs. You may use
+an alert dialog or a Toast popup. But, it may be better if we show each error message below the corresponding input with hightlighting
+style like this package does in client-side validation. It's possible by the favor of
+[`setErrorMessage`](#user-content-validationcontext_method-setErrorMessage) method. Follow the example below. In the example, if there
+are one or more invalid inputs, the server returns status code 400 (Bad Request) and the response body is a JSON data key-ed by the
+invalid input [name](#user-content-withvalidation-name)s. The value of each key is the error message for that input.
+```javascript
+    <Button
+        onPress={() => {
+            function okAction() {
+                //The code to be executed when all inputs are valid ...
+            }
+
+            fetch('https://yourserver.com/check-password', {
+                body: JSON.stringify(this.state),
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(async (response) => {
+                if (response.ok) okAction();
+                else if (response.status == 400) {
+                    const errors = await response.json();
+                    for (let inputName in errors) {
+                        this.contextRef.current.setErrorMessage(inputName, errors[inputName]);
+                    }
+                    if (this.contextRef.current.isValid) {
+                        //Although, the response status is invalid but no error message provided.
+                        //Therefore, we consider all inputs are valid.
+                        okAction();
+                    }
+                }
+                else {
+                    Alert.alert('Validation', 'Server response is not OK');
+                }
+            })
+            .catch(() => {
+                Alert.alert('Validation', 'An error happened.');
+            })
+        }}
+        title="Validate on server"
+    />
+```
+
+To keep consistency, the logic used for the server-side validation must be the same as that used by client-side validation. If you use
+Node server, you may use `react-native-form-input-validator` pakcage. However, you must import the rule objects and the needed fuctions
+from "dist" directory. For example:
+```javascript
+    const {
+        validate
+    } = require("react-native-form-input-validator/dist/helpers");
+    const {
+        required,
+        rule,
+        strlen,
+    } = require('react-native-form-input-validator/dist/rules');
+```
+To validate an input, follow the example below:
+```javascript
+    const passwordRules = [
+        required,
+        strlen(8),
+        rule(
+            value => {
+                return /[a-z]/.test(value) && /[A-Z]/.test(value) && /[0-9]/.test(value) && /[^a-zA-Z\d\s]/.test(value);
+            },
+            'The password must contain capital and non capital letter, number and non-alphanumeric characters'
+        ),
+    ];
+    errMsg = validate(inputValue, passwordRules, inputName);
+    if (typeof(errMsg) == 'string') {
+        errors[inputName] = errMsg; //the error message is collected for the response data
+    }
+```
+
+[Asynchronous validation](#user-content-asynchronous_validation) is still needed in server-side validation, for example, if we need
+to connect to database to check the validity of input. Database connection is usually in asynchronous mode.
+
 
 ## **`Validation` Component** <a name="validation"></a>
 

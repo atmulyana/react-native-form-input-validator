@@ -29,7 +29,8 @@ import CheckBox from '@react-native-community/checkbox';
 import RNDatePicker from '@react-native-community/datetimepicker';
 import type {BaseProps as DateTimePickerProps, DateTimePickerEvent} from '@react-native-community/datetimepicker/src/types';
 import {Calendar as CalendarIcon} from 'react-native-feather';
-import {Picker} from '@react-native-picker/picker';
+import {select, option} from 'rn-select-option';
+const Select = select<string>(), Option = option<string>();
 //$FlowIgnore[untyped-import]
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 import {
@@ -113,7 +114,7 @@ export default (): Node => {
      * If this case happens in a class component, you may follow the example in`ComparePage.js`.
      */
 
-    const TransportInput = withValidation(Picker, {
+    const TransportInput = withValidation(Select, {
         name: 'Transportation',
         getValue: props => props.selectedValue,
         rules: [
@@ -128,6 +129,7 @@ export default (): Node => {
             ),
             required,
         ],
+        setStatusStyle: setStatusStyleDefault,
     });
     
     return <ValidationContext ref={validation}>
@@ -155,37 +157,36 @@ export default (): Node => {
             <ChildrenInput onChangeText={setChildCount} style={styles.flex3} value={childCount} />
         </View>
         <View style={styles.inputRow}>
-            <Text style={[styles.label, {paddingTop: 20}]}>Domicile</Text>
+            <Text style={[styles.label]}>Domicile</Text>
             <View style={styles.flex3}>
                 <DomicileInput
-                    numberOfLines={1}
                     onValueChange={setDomicile}
                     selectedValue={domicile}
-                    style={[styles.border, {backgroundColor: '#ddd'}]}
+                    style={[styles.border, styles.text, styles.textInputHeight]}
                     itemStyle={styles.pickerItem}
                 >
-                    <Picker.Item label="--Please Choose--" value="" style={styles.pickerItem} />
-                    <Picker.Item label="Center Area" value="center" style={styles.pickerItem} />
-                    <Picker.Item label="East Area" value="east" style={styles.pickerItem} />
-                    <Picker.Item label="North Area" value="north" style={styles.pickerItem} />
-                    <Picker.Item label="South Area" value="south" style={styles.pickerItem} />
-                    <Picker.Item label="West Area" value="west" style={styles.pickerItem} />
+                    <Option label="--Please Choose--" value="" style={styles.pickerItem} />
+                    <Option label="Center Area" value="center" style={styles.pickerItem} />
+                    <Option label="East Area" value="east" style={styles.pickerItem} />
+                    <Option label="North Area" value="north" style={styles.pickerItem} />
+                    <Option label="South Area" value="south" style={styles.pickerItem} />
+                    <Option label="West Area" value="west" style={styles.pickerItem} />
                 </DomicileInput>
             </View>
         </View>
         <View style={styles.inputRow}>
-            <Text style={[styles.label, {paddingTop: 14}]}>How to go to office</Text>
+            <Text style={[styles.label]}>How to go to office</Text>
             <View style={styles.flex3}>
                 <TransportInput
                     onValueChange={setTransport}
                     selectedValue={transport}
-                    style={[styles.border, {backgroundColor: '#ddd' }]}
+                    style={[styles.border, styles.text, styles.textInputHeight]}
                     itemStyle={styles.pickerItem}
                 >
-                    <Picker.Item label="--Please Choose--" value="" style={styles.pickerItem} />
-                    <Picker.Item label="Public Transportation" value="public" style={styles.pickerItem} />
-                    <Picker.Item label="Private Vehicle" value="private" style={styles.pickerItem} />
-                    <Picker.Item label="On Foot" value="foot" style={styles.pickerItem} />
+                    <Option label="--Please Choose--" value="" style={styles.pickerItem} />
+                    <Option label="Public Transportation" value="public" style={styles.pickerItem} />
+                    <Option label="Private Vehicle" value="private" style={styles.pickerItem} />
+                    <Option label="On Foot" value="foot" style={styles.pickerItem} />
                 </TransportInput>
             </View>
         </View>
@@ -215,9 +216,8 @@ export default (): Node => {
         </View>
         <View style={styles.inputRow}>
             <View style={styles.flex1} />
-            <View style={[styles.flex3, styles.horizontal]}>
+            <View style={[styles.flex3, styles.horizontal, styles.buttonContainer]}>
                 <Button onPress={() => validation.current?.validate()} title="Validate" />
-                <Text>{'  '}</Text>
                 <Button onPress={() => validation.current?.clearValidation()} title="Clear Validation" />
             </View>
         </View>
@@ -494,7 +494,8 @@ const ChildrenInput = withValidation(ChildsInput, {
     setStatusStyle: setStatusStyleDefault,
 });
 
-const DomicileInput = withValidation(Picker, {
+const DomicileInput = withValidation(Select, {
     getValue: props => props.selectedValue,
     rules: required,
+    setStatusStyle: setStatusStyleDefault,
 });

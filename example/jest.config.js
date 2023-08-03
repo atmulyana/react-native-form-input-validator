@@ -6,6 +6,6 @@ module.exports = {
     "!**/__tests__/_includes/**"
   ],
   transformIgnorePatterns: [
-    "node_modules/(?!(react-native|@react-native|react-native-feather|@react-native-picker|@react-native-community/datetimepicker|react-native-simple-radio-button|jssimpledateformat)/)"
+    "node_modules/(?!(jssimpledateformat|@react-native|react-native|react-native-feather|@react-native-community/datetimepicker|@react-native-picker|react-native-simple-radio-button|rn-select-option|rn-style-props)/)"
   ],
 };

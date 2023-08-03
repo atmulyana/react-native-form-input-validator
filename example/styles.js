@@ -14,6 +14,12 @@ Object.assign(styles, StyleSheet.create({
         borderStyle: 'solid',
         borderWidth: 1,
     },
+    button: {
+        fontSize: 12,
+    },
+    buttonContainer: {
+        gap: 8,
+    },
     flex1: {
         flex: 1
     },
@@ -30,11 +36,14 @@ Object.assign(styles, StyleSheet.create({
     },
     text: {
         color: 'black',
-        fontSize: 13,
-        lineHeight: 15,
+        fontSize: 14,
+        lineHeight: 16,
+    },
+    textCode: {
+        fontFamily: 'monospace',
     },
     textInputHeight: {
-        height: 25,
+        height: 26,
     },
     textPaddingHort: {
         paddingHorizontal: 4,
@@ -43,7 +52,7 @@ Object.assign(styles, StyleSheet.create({
         paddingVertical: 4,
     },
     textSlim: {
-        lineHeight: 13,
+        lineHeight: 14,
         paddingVertical: 0,
     },
     textSmall: {

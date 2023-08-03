@@ -41,17 +41,22 @@ export type StyleProp = RecursiveArray<Readonly<{[prop: string]: mixed}>>;
 
 export interface Ref {
     clearValidation(): void,
+    readonly isValid: boolean,
     validate(): boolean,
     validateAsync(): Promise<boolean>,
 }
 
 export interface ContextRef extends Ref {
+    getErrorMessage(name: string): string | void,
+    getInput(name: string): InputRef | void,
     refreshMessage(): void,
+    setErrorMessage(name: string, message: string): void,
 }
 
 export interface InputRef extends Ref {
     focus?: () => mixed,
-    readonly isValid: boolean,
+    getErrorMessage: () => string,
+    readonly name?: string,
     setErrorMessage(message: string): void,
 }
 

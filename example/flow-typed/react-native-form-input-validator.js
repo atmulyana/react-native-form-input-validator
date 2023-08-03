@@ -46,17 +46,23 @@ declare module "react-native-form-input-validator/lib/types" {
 
     declare export interface Ref {
         clearValidation(): void,
+        +isValid: boolean,
         validate(): boolean,
         validateAsync(): Promise<boolean>,
     }
 
     declare export interface ContextRef extends Ref {
+        getErrorMessage(name: string): string | void,
+        getInput(name: string): InputRef | void,
         refreshMessage(): void,
+        setErrorMessage(name: string, message: string): void,
     }
 
     declare export interface InputRef extends Ref {
         focus?: () => mixed,
-        +isValid: boolean,
+        getErrorMessage(): string,
+        +index: number,
+        +name?: string,
         setErrorMessage(string): void,
     }
 
@@ -76,7 +82,7 @@ declare module "react-native-form-input-validator/lib/types" {
         inputErrorStyle: StyleProp,
         lang?: LangFunction,
         addRef: InputRef => mixed,
-        removeRef: InputRef => mixed;
+        removeRef: InputRef => mixed,
     |};
 
     declare export type ContextDefaultProps = {

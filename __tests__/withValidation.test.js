@@ -48,14 +48,20 @@ test('render input `withValidation`', () => {
     expect(input.props.testID).toBe('input');
 
     expect(inputRef).not.toBeFalsy();
-    expect(typeof inputRef.validate).toBe('function');
+
     expect(typeof inputRef.clearValidation).toBe('function');
+    expect(typeof inputRef.getErrorMessage).toBe('function');
+    expect(typeof inputRef.setErrorMessage).toBe('function');
+    expect(typeof inputRef.validate).toBe('function');
+    expect(typeof inputRef.validateAsync).toBe('function');
+    expect(inputRef.name).toBeUndefined();
     expect(inputRef.isValid).toBe(true);
 
     Renderer.act(() => {
         inputRef.validate();
     });
     expect(inputRef.isValid).toBe(false);
+    expect(inputRef.getErrorMessage()).toBe('required');
     expect(inputContainer.children[1]?.type).toBe(Text);
     expect(inputContainer.children[1].props.children).toBe('required');
     expect(StyleSheet.flatten(input.props.style).borderColor).not.toBe('gray'); //red
@@ -64,6 +70,7 @@ test('render input `withValidation`', () => {
         inputRef.clearValidation();
     });
     expect(inputRef.isValid).toBe(true);
+    expect(inputRef.getErrorMessage()).toBe('');
     expect(inputContainer.children[1]).toBeUndefined();
     expect(input.props.style.borderColor).toBe('gray');
 });

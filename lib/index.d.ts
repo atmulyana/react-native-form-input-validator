@@ -18,22 +18,9 @@ import type {
 } from './types';
 type mixed = any;
 
-export class ValidationContext extends React.Component<ContextProps> implements ContextRef {
-    constructor(props: ValidationProps);
-    clearValidation(): void;
-    refreshMessage(): void;
-    validate(): boolean;
-    validateAsync(): Promise<boolean>;
-}
-
-export class Validation extends React.Component<ValidationProps> implements InputRef {
-    constructor(props: ValidationProps);
-    get isValid(): boolean;
-    clearValidation(): void;
-    validate(): boolean;
-    validateAsync(): Promise<boolean>;
-    setErrorMessage(message: string): void;
-}
+declare class ValidationContext extends React.Component<ContextProps> implements ContextRef{}
+declare class Validation extends React.Component<ValidationProps> implements InputRef {}
+export {ValidationContext, Validation};
 
 export var AsyncFailMessage: TAsyncFailMessage;
 
