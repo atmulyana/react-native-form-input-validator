@@ -79,6 +79,7 @@ declare module "react-native-form-input-validator/lib/types" {
         asyncFailMessage: $Values<typeof AsyncFailMessage>,
         auto: boolean,
         errorTextStyle: StyleProp,
+        focusOnInvalid: boolean,
         inputErrorStyle: StyleProp,
         lang?: LangFunction,
         addRef: InputRef => mixed,
@@ -89,7 +90,7 @@ declare module "react-native-form-input-validator/lib/types" {
         asyncFailMessage: ContextValue['asyncFailMessage'],
         auto: ContextValue['auto'],
         errorTextStyle: ContextValue['errorTextStyle'],
-        focusOnInvalid: boolean,
+        focusOnInvalid: ContextValue['focusOnInvalid'],
         inputErrorStyle: ContextValue['inputErrorStyle'],
         lang: $NonMaybeType<ContextValue['lang']>,
     };

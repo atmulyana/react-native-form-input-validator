@@ -12,7 +12,7 @@ import type {
     ValidateFunction,
     ValidateFunctionAsync,
 } from './lib/types';
-type mixed = any;
+type mixed = unknown;
 
 export class ValidationRule<T> extends Rule<T> {
     validate(): Rule<T>;
@@ -30,8 +30,8 @@ export function rule(
     errorMessage?: string
 ): Rule<mixed>;
 
-export class CustomRuleAsync extends ValidateFunctionAsync<mixed> {
-    constructor(validateFunc: ValidateFunctionAsyn<mixed>, errorMessage?: string);
+export class CustomRuleAsync extends ValidationRuleAsync<mixed> {
+    constructor(validateFunc: ValidateFunctionAsync<mixed>, errorMessage?: string);
 }
 export function ruleAsync(
     validateFunc: ValidateFunctionAsync<mixed>,

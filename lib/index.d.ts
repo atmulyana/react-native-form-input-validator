@@ -16,10 +16,28 @@ import type {
     ValidationProps,
     InputRef,
 } from './types';
-type mixed = any;
+type mixed = unknown;
 
-declare class ValidationContext extends React.Component<ContextProps> implements ContextRef{}
-declare class Validation extends React.Component<ValidationProps> implements InputRef {}
+declare class ValidationContext extends React.Component<ContextProps> implements ContextRef {
+    clearValidation(): void;
+    getErrorMessage(name: string): string | void;
+    getInput(name: string): InputRef | void;
+    readonly isValid: boolean;
+    refreshMessage(): void;
+    setErrorMessage(name: string, message: string): void;
+    validate(): boolean;
+    validateAsync(): Promise<boolean>;
+}
+declare class Validation extends React.Component<ValidationProps> implements InputRef {
+    clearValidation(): void;
+    focus?: () => mixed;
+    getErrorMessage: () => string;
+    readonly isValid: boolean;
+    readonly name?: string;
+    setErrorMessage(message: string): void;
+    validate(): boolean;
+    validateAsync(): Promise<boolean>;
+}
 export {ValidationContext, Validation};
 
 export var AsyncFailMessage: TAsyncFailMessage;

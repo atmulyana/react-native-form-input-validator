@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 
-type mixed = any;
+type mixed = unknown;
 export type MayBe<T> = T | null | undefined; 
 export type LangFunction = (s: string) => string;
 export type ValidateFunction<T> = (v: T) => boolean | string;
@@ -73,6 +73,7 @@ export type ContextValue = {
     asyncFailMessage: TAsyncFailMessage[keyof TAsyncFailMessage],
     auto: boolean,
     errorTextStyle: StyleProp,
+    focusOnInvalid: boolean,
     inputErrorStyle: StyleProp,
     lang?: LangFunction,
     addRef: (ref: InputRef) => mixed,
@@ -84,7 +85,7 @@ export type ContextProps = {
     auto: ContextValue['auto'],
     children: React.ReactNode,
     errorTextStyle: ContextValue['errorTextStyle'],
-    focusOnInvalid: boolean,
+    focusOnInvalid: ContextValue['focusOnInvalid'],
     inputErrorStyle: ContextValue['inputErrorStyle'],
     lang: NonNullable<ContextValue['lang']>,
 };

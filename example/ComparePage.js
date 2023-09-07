@@ -59,8 +59,8 @@ export default class extends React.Component {
             ]
         });
 
-        this.passwordChange = (value => this.setState({password: value})).bind(this);
-        this.confirmPasswordChange = (value => this.setState({confirmPassword: value})).bind(this);
+        this.passwordChange = value => this.setState({password: value});
+        this.confirmPasswordChange = value => this.setState({confirmPassword: value});
     }
 
     render() {

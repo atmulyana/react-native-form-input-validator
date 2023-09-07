@@ -285,7 +285,10 @@ class NamePart extends React.PureComponent<{
 
 const dtSimlatePressEvent: DateTimePickerEvent = {
     type: "neutralButtonPressed",
-    nativeEvent: {},
+    nativeEvent: {
+        timestamp: 0,
+        utcOffset: 0,
+    },
 }
 const Calendar: (props: DateTimePickerProps) => Node = Platform.OS == 'android'
     //$FlowIgnore[incompatible-exact]
