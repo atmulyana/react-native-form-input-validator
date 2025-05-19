@@ -1,5 +1,7 @@
 # **react-native-form-input-validator**
 
+> ## This project has been moved to [rc-input-validator](https://github.com/atmulyana/rc-input-validator)
+
 It's to validate the input's value in RN app such as `TextInput` or other kind of inputs. The value is validated based on the rule defined for the input.
 If the input is invalid, the error message is shown beneath the input. It's very useful before submitted to the server. See the pictures below for some
 examples.     
